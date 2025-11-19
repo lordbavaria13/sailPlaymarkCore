@@ -2,13 +2,19 @@ import Hapi from '@hapi/hapi';
 import path from 'path';
 import Vision from "@hapi/vision";
 import Handlebars from "handlebars";
-import { fileURLToPath } from 'url';
+import dotenv from "dotenv";
 
 import { webRoutes } from './web-routes.js';
 import { db } from './models/db.js';
 
-//const __filename = fileURLToPath(import.meta.url);
+
 const dirname = process.cwd();
+
+const result = dotenv.config();
+if (result.error) {
+  console.log(result.error.message);
+  process.exit(1);
+}
 
 const init = async () => {
 

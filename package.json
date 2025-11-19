@@ -7,7 +7,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "dev:tsc": "tsc --watch",
+    "start": "npm run build && node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "lint": "eslint -c .eslintrc.js 'src/**/*.{ts,js}' --ext .ts,.js",
     "lint:fix": "npm run lint -- --fix"

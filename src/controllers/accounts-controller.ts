@@ -32,11 +32,11 @@ export const accountsController = {
   },
   login: {
     handler: async function (request:Request, h:ResponseToolkit) {
-      const { username, password, email } = request.payload as UserProps;
+      const { username, password} = request.payload as UserProps;
       if (!db.userStore) {
         return h.redirect("/");
       }
-      const user = await db.userStore.getUserByEmail(email);
+      const user = await db.userStore.getUserByUsername(username);
       if (!user || user.password !== password) {
         return h.redirect("/");
       }

@@ -1,0 +1,20 @@
+<form class="box" action="/playlist/{{playlist._id}}/addtrack" method="POST">
+  <label>Enter Placemark Details:</label>
+  <div class="field is-horizontal">
+    <div class="field-body">
+      <div class="field">
+        <input class="input" type="text" placeholder="Enter Title" name="title">
+      </div>
+      <div class="field">
+        <input class="input" type="text" placeholder="Enter latitude" name="latitude">
+      </div>
+      <div class="field">
+        <input class="input" type="text" placeholder="Enter longitude" name="longitude">
+      </div>
+      <div class="field">
+        <input class="input" type="text" placeholder="Enter description" name="discription">
+      </div>
+    </div>
+  </div>
+  <button class="button is-primary">Add Details</button>
+</form>

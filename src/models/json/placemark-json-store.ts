@@ -18,5 +18,11 @@ export const placemarkJsonStore = {
     db.data!.placemarks.push(placemark);
     await db.write();
     return placemark;
-  }
+  },
+
+  async deletePlacemarkById(id: string): Promise<void> {
+    await db.read();
+    db.data!.placemarks = db.data!.placemarks.filter((placemark) => placemark._id !== id);
+    await db.write();
+  },
 };

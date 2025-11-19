@@ -1,5 +1,19 @@
 {
-  "users": [],
-  "placemarks": [],
+  "users": [
+    {
+      "username": "123",
+      "email": "123",
+      "password": "123",
+      "_id": "d1a1f6f8-1227-496c-a8fc-37d5d4f05083"
+    }
+  ],
+  "placemarks": [
+    {
+      "username": "test",
+      "email": "test",
+      "password": "test",
+      "_id": "1c2e91e3-6ab0-4da7-ab1b-afe29cc1e3ca"
+    }
+  ],
   "details": []
 }
