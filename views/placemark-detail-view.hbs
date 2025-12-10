@@ -1,0 +1,13 @@
+{{> menu }}
+
+<section class="section">
+  <h1 class="title">Placemark: {{placemark.title}}</h1>
+  <a href="/dashboard/edit/{{details._id}}" class="button">
+      <span class="icon is-small">
+        <i class="fa-solid fa-pen"></i>
+      </span>
+    </a>
+  <div>
+  {{> list-details}}
+  </div>
+</section>

@@ -25,4 +25,10 @@ export const placemarkJsonStore = {
     db.data!.placemarks = db.data!.placemarks.filter((placemark) => placemark._id !== id);
     await db.write();
   },
+
+  async getPlacemarkById(id: string): Promise<PlacemarkProps | null> {
+    await db.read();
+    const placemark = (db.data!.placemarks as PlacemarkProps[]).find((placemark) => placemark._id === id);
+    return placemark ?? null;
+  }
 };

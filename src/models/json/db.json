@@ -9,11 +9,30 @@
   ],
   "placemarks": [
     {
-      "username": "test",
-      "email": "test",
-      "password": "test",
-      "_id": "1c2e91e3-6ab0-4da7-ab1b-afe29cc1e3ca"
+      "title": "testmark",
+      "_id": "c45274ac-a86a-4566-8459-4700100c2ca9"
+    },
+    {
+      "title": "testmark2",
+      "_id": "88a46d7d-adf8-4d7c-9489-4f92c50bf05d"
+    },
+    {
+      "title": "tm3",
+      "_id": "729be34c-ef89-4ce4-970f-b12c7e42f224"
+    },
+    {
+      "title": "tester1",
+      "_id": "51d0de92-378b-42e7-b0ef-363515ef8328"
     }
   ],
-  "details": []
+  "details": [
+    {
+      "pmId": "51d0de92-378b-42e7-b0ef-363515ef8328",
+      "latitude": 0,
+      "longitude": 0,
+      "description": "",
+      "_id": "fdaf47bd-cf58-4ecd-b0e6-14c2694d0bf5",
+      "title": "tester1"
+    }
+  ]
 }

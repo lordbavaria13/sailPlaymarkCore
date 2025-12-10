@@ -1,9 +1,9 @@
-<form class="box" action="/playlist/{{playlist._id}}/addtrack" method="POST">
-  <label>Enter Placemark Details:</label>
+<form class="box" action="/dashboard/update/{{details.pmId}}/addtrack" method="POST">
+  <label>{details.title} Details:</label>
   <div class="field is-horizontal">
     <div class="field-body">
       <div class="field">
-        <input class="input" type="text" placeholder="Enter Title" name="title">
+        <input class="input" type="text" placeholder="Enter Title" name={title}>
       </div>
       <div class="field">
         <input class="input" type="text" placeholder="Enter latitude" name="latitude">

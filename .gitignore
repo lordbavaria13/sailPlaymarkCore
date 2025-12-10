@@ -120,3 +120,6 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Lowdb database file
+src/models/json/db.json
