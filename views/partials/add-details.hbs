@@ -1,18 +1,21 @@
-<form class="box" action="/dashboard/update/{{details.pmId}}/addtrack" method="POST">
-  <label>{details.title} Details:</label>
+<form class="box" action="/dashboard/updateplacemark/{{pmId}}" method="POST">
+  <label>{{title}} Details:</label>
   <div class="field is-horizontal">
     <div class="field-body">
       <div class="field">
-        <input class="input" type="text" placeholder="Enter Title" name={title}>
+        <label>Title: </label><input class="input" type="text" placeholder="Enter Title" name="title" value="{{title}}">
       </div>
       <div class="field">
-        <input class="input" type="text" placeholder="Enter latitude" name="latitude">
+        <label>Latitude: </label>
+        <input class="input" type="text" placeholder="Enter latitude" name="latitude" value="{{latitude}}">
       </div>
       <div class="field">
-        <input class="input" type="text" placeholder="Enter longitude" name="longitude">
+        <label>Longitude: </label>
+        <input class="input" type="text" placeholder="Enter longitude" name="longitude" value="{{longitude}}">
       </div>
       <div class="field">
-        <input class="input" type="text" placeholder="Enter description" name="discription">
+        <label>Description: </label>
+        <input class="input" type="text" placeholder="Enter description" name="description" value="{{description}}">
       </div>
     </div>
   </div>

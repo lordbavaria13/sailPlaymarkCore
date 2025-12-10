@@ -29,7 +29,13 @@ export const detailJsonStore = {
     await db.read();
     db.data.details = db.data.details.filter((details) => details._id !== id);
     await db.write();
-  },  
+  }, 
+  
+  async getDetailsById(id: string): Promise<DetailsProps | null> {  
+    await db.read();
+    const details = db.data.details.find((details) => details._id === id);
+    return details ?? null;
+  },
 
   async getDetailByPmId(pmId: string): Promise<DetailsProps | null> {
     await db.read();
@@ -41,7 +47,7 @@ export const detailJsonStore = {
     await db.write();
   },
 
-  async updateDetailsById(id: string, updatedDetails: Partial<DetailsProps>): Promise<DetailsProps | null> {
+  async updateDetailsById(id: string, updatedDetails: DetailsProps): Promise<DetailsProps | null> {
     await db.read();
     const detailsIndex = db.data.details.findIndex((details) => details._id === id);
     if (detailsIndex === -1) {

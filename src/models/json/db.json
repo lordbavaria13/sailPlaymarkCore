@@ -9,20 +9,8 @@
   ],
   "placemarks": [
     {
-      "title": "testmark",
-      "_id": "c45274ac-a86a-4566-8459-4700100c2ca9"
-    },
-    {
-      "title": "testmark2",
-      "_id": "88a46d7d-adf8-4d7c-9489-4f92c50bf05d"
-    },
-    {
-      "title": "tm3",
-      "_id": "729be34c-ef89-4ce4-970f-b12c7e42f224"
-    },
-    {
-      "title": "tester1",
-      "_id": "51d0de92-378b-42e7-b0ef-363515ef8328"
+      "title": "pm1234",
+      "_id": "655056bc-f86c-44fd-a0c2-768b8128a578"
     }
   ],
   "details": [
@@ -33,6 +21,14 @@
       "description": "",
       "_id": "fdaf47bd-cf58-4ecd-b0e6-14c2694d0bf5",
       "title": "tester1"
+    },
+    {
+      "pmId": "655056bc-f86c-44fd-a0c2-768b8128a578",
+      "latitude": 12.3,
+      "longitude": 53.2568,
+      "description": "this is a description",
+      "_id": "66aa9372-2f1d-4f8f-ad6e-9371832cfb9a",
+      "title": "pm1234"
     }
   ]
 }

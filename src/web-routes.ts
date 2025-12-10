@@ -13,7 +13,7 @@ export const webRoutes:ServerRoute[] = [
   { method: "GET", path: "/dashboard/deleteplacemark/{id}", options: dashboardController.deletePlacemark },
   { method: "GET", path: "/dashboard/placemark/{id}", options: dashboardController.showPlacemarkDetails },
   { method: "GET", path: "/dashboard/edit/{id}", options: dashboardController.showEditPlacemarkDetails },
-
+  { method: "POST", path: "/dashboard/updateplacemark/{id}", options: dashboardController.updatePlacemarkDetails },
 
   { method: "GET", path: "/dashboard", options: dashboardController.index },
   { method: "POST", path: "/dashboard/addplacemark", options: dashboardController.addPlacemark },

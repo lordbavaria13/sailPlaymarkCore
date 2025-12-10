@@ -30,5 +30,18 @@ export const placemarkJsonStore = {
     await db.read();
     const placemark = (db.data!.placemarks as PlacemarkProps[]).find((placemark) => placemark._id === id);
     return placemark ?? null;
+  },
+
+  async updatePlacemarkById(id: string, updatedPlacemark: Partial<PlacemarkProps>): Promise<PlacemarkProps | null> {
+    await db.read();
+    const placemarkIndex = (db.data!.placemarks as PlacemarkProps[]).findIndex((placemark) => placemark._id === id);
+    if (placemarkIndex === -1) {
+      return null; // Placemark not found
+    } 
+    const placemark = (db.data!.placemarks as PlacemarkProps[])[placemarkIndex];
+    const updatedPlacemarkObj = { ...placemark, ...updatedPlacemark };
+    (db.data!.placemarks as PlacemarkProps[])[placemarkIndex] = updatedPlacemarkObj;
+    await db.write();
+    return updatedPlacemarkObj;
   }
 };
