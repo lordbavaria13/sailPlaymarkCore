@@ -11,10 +11,15 @@ export const dashboardController = {
             if (!db.placemarkStore) {
                 throw new Error("placemarkStore not initialized");
             }
-            const placemarks = await db.placemarkStore.getAllPlacemarks();
+            const loggedInUser = request.auth.credentials as { _id?: string };
+            if (!loggedInUser || !loggedInUser._id) {
+                throw new Error("User not authenticated");
+            }
+            const placemarks = await db.placemarkStore!.getUserPlacemarks(loggedInUser._id);
             const viewData = {
                 title: "Sailing Dashboard",
                 placemarks: placemarks,
+                user: loggedInUser,  
             };
             return h.view("dashboard-view", viewData);
         },
@@ -23,7 +28,11 @@ export const dashboardController = {
     addPlacemark: {
         handler: async function (request: Request, h: ResponseToolkit) {
             const payload = request.payload as { title?: string };
-            const newPlacemark: PlacemarkProps = await db.placemarkStore!.addPlacemarks({ title: payload.title ?? "" });
+            const loggedInUser = request.auth.credentials as { _id?: string };
+            if (!loggedInUser || !loggedInUser._id) {
+                throw new Error("User not authenticated");
+            }
+            const newPlacemark: PlacemarkProps = await db.placemarkStore!.addPlacemarks({ title: payload.title ?? "", userId: loggedInUser._id! });
             await db.detailStore!.addDetails({
                 pmId: newPlacemark._id!,
                 latitude: 0,
@@ -48,9 +57,9 @@ export const dashboardController = {
         handler: async function(request: Request, h: ResponseToolkit) {
             const placemarkId = request.params.id;
             const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId);   
-            //console.log("Placemark ID:", placemarkId);
+            console.log("Placemark ID:", placemarkId);
             const details = await db.detailStore!.getDetailByPmId(placemarkId);
-            //console.log("Details:", details);
+            console.log("Details:", details);
             return h.view("placemark-detail-view", { details: details, placemark: placemark } );
         }
     },
@@ -58,7 +67,7 @@ export const dashboardController = {
         showEditPlacemarkDetails: {
         handler: async function(request: Request, h: ResponseToolkit) {
             const detailsId = request.params.id;
-            console.log("Details ID:"+ detailsId);
+            //console.log("Details ID:"+ detailsId);
             //const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId); 
             const details = await db.detailStore!.getDetailsById(detailsId);
             //console.log(details);

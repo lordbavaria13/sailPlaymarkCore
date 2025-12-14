@@ -3,6 +3,7 @@ import { db } from './store-utils.js';
 
 export interface PlacemarkProps {
   title: string;
+  userId: string;
   _id?: string;
 }
 
@@ -30,6 +31,11 @@ export const placemarkJsonStore = {
     await db.read();
     const placemark = (db.data!.placemarks as PlacemarkProps[]).find((placemark) => placemark._id === id);
     return placemark ?? null;
+  },
+
+  async getUserPlacemarks(userId: string): Promise<PlacemarkProps[]> {
+    await db.read();
+    return (db.data!.placemarks as PlacemarkProps[]).filter((placemark) => placemark.userId === userId);
   },
 
   async updatePlacemarkById(id: string, updatedPlacemark: Partial<PlacemarkProps>): Promise<PlacemarkProps | null> {

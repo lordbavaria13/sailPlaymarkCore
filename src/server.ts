@@ -1,11 +1,16 @@
 import Hapi from '@hapi/hapi';
-import path from 'path';
 import Vision from "@hapi/vision";
 import Handlebars from "handlebars";
 import dotenv from "dotenv";
 
 import { webRoutes } from './web-routes.js';
 import { db } from './models/db.js';
+
+import Cookie from "@hapi/cookie";
+import { accountsController } from "./controllers/accounts-controller.js";
+import { env } from 'process';
+
+
 
 
 const dirname = process.cwd();
@@ -24,6 +29,19 @@ const init = async () => {
     });
 
     await server.register(Vision);
+    await server.register(Cookie);
+
+    server.auth.strategy("session", "cookie", {
+    cookie: {
+      name: env.COOKIE_NAME,
+      password: env.COOKIE_PASSWORD,
+      isSecure: false,
+    },
+    redirectTo: "/",
+    validate: accountsController.validate,
+    });
+    server.auth.default("session");
+
 
     server.views({
     engines: {
