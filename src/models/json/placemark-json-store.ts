@@ -1,5 +1,5 @@
-import { v4 } from 'uuid';
-import { db } from './store-utils.js';
+import { v4 } from "uuid";
+import { db } from "./store-utils.js";
 
 export interface PlacemarkProps {
   title: string;
@@ -23,19 +23,19 @@ export const placemarkJsonStore = {
 
   async deletePlacemarkById(id: string): Promise<void> {
     await db.read();
-    db.data!.placemarks = db.data!.placemarks.filter((placemark) => placemark._id !== id);
+    db.data!.placemarks = db.data!.placemarks.filter((p) => p._id !== id);
     await db.write();
   },
 
   async getPlacemarkById(id: string): Promise<PlacemarkProps | null> {
     await db.read();
-    const placemark = (db.data!.placemarks as PlacemarkProps[]).find((placemark) => placemark._id === id);
-    return placemark ?? null;
+    const found = (db.data!.placemarks as PlacemarkProps[]).find((p) => p._id === id);
+    return found ?? null;
   },
 
   async getUserPlacemarks(userId: string): Promise<PlacemarkProps[]> {
     await db.read();
-    return (db.data!.placemarks as PlacemarkProps[]).filter((placemark) => placemark.userId === userId);
+    return (db.data!.placemarks as PlacemarkProps[]).filter((p) => p.userId === userId);
   },
 
   async updatePlacemarkById(id: string, updatedPlacemark: Partial<PlacemarkProps>): Promise<PlacemarkProps | null> {

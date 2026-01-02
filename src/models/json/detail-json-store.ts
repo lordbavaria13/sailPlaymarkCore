@@ -1,6 +1,5 @@
 import { v4 } from "uuid";
 import { db } from "./store-utils.js";
-import { get } from "http";
 
 export interface DetailsProps {
     pmId: string;
@@ -27,20 +26,20 @@ export const detailJsonStore = {
 
   async deleteDetailsById(id: string): Promise<void> {
     await db.read();
-    db.data.details = db.data.details.filter((details) => details._id !== id);
+    db.data.details = db.data.details.filter((d) => d._id !== id);
     await db.write();
   }, 
   
   async getDetailsById(id: string): Promise<DetailsProps | null> {  
     await db.read();
-    const details = db.data.details.find((details) => details._id === id);
-    return details ?? null;
+    const found = db.data.details.find((d) => d._id === id);
+    return found ?? null;
   },
 
   async getDetailByPmId(pmId: string): Promise<DetailsProps | null> {
     await db.read();
-    const detail = db.data.details.find((details) => details.pmId === pmId);
-    return detail ?? null;
+    const found = db.data.details.find((d) => d.pmId === pmId);
+    return found ?? null;
   },
   async deleteAllDetails(): Promise<void> {
     db.data.details = [];
@@ -49,7 +48,7 @@ export const detailJsonStore = {
 
   async updateDetailsById(id: string, updatedDetails: DetailsProps): Promise<DetailsProps | null> {
     await db.read();
-    const detailsIndex = db.data.details.findIndex((details) => details._id === id);
+    const detailsIndex = db.data.details.findIndex((d) => d._id === id);
     if (detailsIndex === -1) {
       return null; // Details not found
     }

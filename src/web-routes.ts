@@ -1,6 +1,6 @@
-import {ServerRoute} from '@hapi/hapi';
+import {ServerRoute} from "@hapi/hapi";
 
-import { dashboardController } from './controllers/dashboard-controller.js';
+import { dashboardController } from "./controllers/dashboard-controller.js";
 import { accountsController } from "./controllers/accounts-controller.js";
 
 export const webRoutes:ServerRoute[] = [

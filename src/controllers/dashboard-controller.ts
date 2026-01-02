@@ -1,9 +1,10 @@
-import { Request, ResponseToolkit } from '@hapi/hapi';
+import { Request, ResponseToolkit } from "@hapi/hapi";
 
+import { v4 } from "uuid";
 import { db } from "../models/db.js";
-import { PlacemarkProps } from '../models/json/placemark-json-store.js';
-import { DetailsProps } from '../models/json/detail-json-store.js';
-import { v4 } from 'uuid';
+import { PlacemarkProps } from "../models/json/placemark-json-store.js";
+import { DetailsProps } from "../models/json/detail-json-store.js";
+import { DetailsSpec, PlacemarkSpec } from "../models/joi-schemas.js";
 
 export const dashboardController = {
     index: {
@@ -26,6 +27,13 @@ export const dashboardController = {
     },
 
     addPlacemark: {
+        validate: {
+      payload: PlacemarkSpec,
+      options: { abortEarly: false },
+            failAction: function (request:Request, h:ResponseToolkit, error?:Error) {
+                return h.view("dashboard-view", { title: "Add Placemark error", errors: error?.message }).takeover().code(400);
+            },
+    },
         handler: async function (request: Request, h: ResponseToolkit) {
             const payload = request.payload as { title?: string };
             const loggedInUser = request.auth.credentials as { _id?: string };
@@ -67,14 +75,21 @@ export const dashboardController = {
         showEditPlacemarkDetails: {
         handler: async function(request: Request, h: ResponseToolkit) {
             const detailsId = request.params.id;
-            //console.log("Details ID:"+ detailsId);
-            //const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId); 
+            // console.log("Details ID:"+ detailsId);
+            // const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId); 
             const details = await db.detailStore!.getDetailsById(detailsId);
-            //console.log(details);
+            // console.log(details);
             return h.view("edit-placemark-view", { details: details });
         }
     },
     updatePlacemarkDetails: {
+    validate: {
+      payload: DetailsSpec,
+      options: { abortEarly: false },
+            failAction: function (request:Request, h:ResponseToolkit, error?:Error) {
+                return h.view("playlist-view", { title: "Add track error", errors: error?.message }).takeover().code(400);
+            },
+    },
         handler: async function(request: Request, h: ResponseToolkit) {
             const placemarkId = request.params.id;
             const detailsId = await db.detailStore!.getDetailByPmId(placemarkId).then(detail => detail?._id) ?? "";
@@ -91,7 +106,7 @@ export const dashboardController = {
             await db.detailStore!.updateDetailsById(detailsId, updatedDetails!);
             
             await db.placemarkStore!.updatePlacemarkById(placemarkId, { title: updatedDetails!.title });
-            return h.redirect("/dashboard/placemark/" + placemarkId);
+            return h.redirect(`/dashboard/placemark/${  placemarkId}`);
         }
     }
 };

@@ -1,8 +1,10 @@
 
-import { Request, ResponseToolkit } from '@hapi/hapi';
+import { Request, ResponseToolkit } from "@hapi/hapi";
 
 import { db } from "../models/db.js";
-import { UserProps } from '../models/json/user-json-store.js';
+import { UserProps } from "../models/json/user-json-store.js";
+import { UserCredentialsSpec, UserSpec } from "../models/joi-schemas.js";
+
 
 export const accountsController = {
   index: {
@@ -19,6 +21,15 @@ export const accountsController = {
   },
   signup: {
     auth: false as const,
+     validate: {
+      payload: UserSpec,
+      failAction: function (request:Request, h:ResponseToolkit, error?:Error) {
+        if(error) {
+          console.log("Validation error:", error.message);
+        }
+        return h.view("signup-view", { title: "Error, please try again", errors: error?.message }).takeover().code(400);
+      }
+    },
     handler: async function (request:Request, h:ResponseToolkit) {
       const user:UserProps = request.payload as UserProps;
       if (!db.userStore) {
@@ -36,6 +47,13 @@ export const accountsController = {
   },
   login: {
     auth: false as const,
+    validate: {
+      payload: UserCredentialsSpec,
+      options: { abortEarly: false },
+      failAction: function (request:Request, h:ResponseToolkit, error?:Error) {
+        return h.view("login-view", { title: "Log in error", errors: error?.message }).takeover().code(400);
+      },
+    },
     handler: async function (request:Request, h:ResponseToolkit) {
       const { username, password} = request.payload as UserProps;
       if (!db.userStore) {
@@ -46,14 +64,16 @@ export const accountsController = {
         return h.redirect("/");
       }
       // create session
-      (request as any).cookieAuth.set({ id: user._id });
+      const { cookieAuth } = request;
+      cookieAuth.set({ id: user._id });
       return h.redirect("/dashboard");
     },
   },
   logout: {
     auth: false as const,
     handler: function (request: Request, h: ResponseToolkit) {
-      (request as any).cookieAuth.clear();
+      const { cookieAuth } = request;
+      cookieAuth.clear();
       return h.redirect("/");
     },
   },

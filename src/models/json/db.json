@@ -5,6 +5,24 @@
       "email": "123",
       "password": "123",
       "_id": "d1a1f6f8-1227-496c-a8fc-37d5d4f05083"
+    },
+    {
+      "username": "test",
+      "email": "test@test.de",
+      "password": "test",
+      "_id": "f8fb2135-7d2d-441c-b5da-3164310ff894"
+    },
+    {
+      "username": "user",
+      "email": "user@test.de",
+      "password": "user",
+      "_id": "2b33c886-5979-4042-bd87-010a403bc7fa"
+    },
+    {
+      "username": "Maggie",
+      "email": "maggie@simpson.com",
+      "password": "secret",
+      "_id": "f07fe246-83d8-49ed-a455-309f19619ffb"
     }
   ],
   "placemarks": [
