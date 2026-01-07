@@ -1,20 +1,29 @@
 {
-  "users": [],
+  "users": [
+    {
+      "username": "MaggieSimpson",
+      "email": "maggie@simpson.com",
+      "password": "secret",
+      "_id": "1aaf874f-0704-49dd-ae91-e649388fd1a7"
+    }
+  ],
   "placemarks": [
     {
       "title": "New",
-      "userId": "1ef68b60-a8f9-4911-be55-b26d228e949d",
-      "_id": "14308d60-b35b-48ae-a62f-957d3969d031"
+      "userId": "1aaf874f-0704-49dd-ae91-e649388fd1a7",
+      "categories": [],
+      "images": [],
+      "_id": "3d4b72a7-6786-46ff-9a7f-9f527d99ac1e"
     }
   ],
   "details": [
     {
-      "pmId": "bc98059b-7ef5-4313-9782-605e81c6d621",
+      "pmId": "57f4179a-5cdb-4bb0-82d9-36ae761e112c",
       "latitude": 5,
       "longitude": 5,
       "title": "New",
       "description": "New desc",
-      "_id": "c263914a-9afe-484a-918b-c60c1b7665b6"
+      "_id": "9e1eab9e-aa6f-4b46-8c08-a800ba3681a4"
     }
   ]
 }

@@ -2,7 +2,6 @@ import { Request, ResponseToolkit } from "@hapi/hapi";
 
 import { v4 } from "uuid";
 import { db } from "../models/db.js";
-import { PlacemarkProps } from "../models/json/placemark-json-store.js";
 import { DetailsProps } from "../models/json/detail-json-store.js";
 import { DetailsSpec, PlacemarkSpec } from "../models/joi-schemas.js";
 
@@ -40,7 +39,10 @@ export const dashboardController = {
             if (!loggedInUser || !loggedInUser._id) {
                 throw new Error("User not authenticated");
             }
-            const newPlacemark: PlacemarkProps = await db.placemarkStore!.addPlacemarks({ title: payload.title ?? "", userId: loggedInUser._id! });
+            const newPlacemark = await db.placemarkStore!.addPlacemarks({ title: payload.title ?? "", userId: loggedInUser._id! });
+            if (!newPlacemark) {
+                return h.view("dashboard-view", { title: "Add Placemark error", errors: "Failed to create placemark." }).takeover().code(400);
+            }
             await db.detailStore!.addDetails({
                 pmId: newPlacemark._id!,
                 latitude: 0,
@@ -75,11 +77,14 @@ export const dashboardController = {
         showEditPlacemarkDetails: {
         handler: async function(request: Request, h: ResponseToolkit) {
             const detailsId = request.params.id;
-            // console.log("Details ID:"+ detailsId);
-            // const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId); 
             const details = await db.detailStore!.getDetailsById(detailsId);
-            // console.log(details);
-            return h.view("edit-placemark-view", { details: details });
+            if (!details) {
+                return h.view("edit-placemark-view", { details: null });
+            }
+            const placemark = await db.placemarkStore!.getPlacemarkById(details.pmId);
+            const categoriesCSV = placemark?.categories ? placemark.categories.join(", ") : "";
+            const imagesCSV = placemark?.images ? placemark.images.join(", ") : "";
+            return h.view("edit-placemark-view", { details: details, placemark: placemark, categoriesCSV, imagesCSV });
         }
     },
     updatePlacemarkDetails: {
@@ -93,7 +98,7 @@ export const dashboardController = {
         handler: async function(request: Request, h: ResponseToolkit) {
             const placemarkId = request.params.id;
             const detailsId = await db.detailStore!.getDetailByPmId(placemarkId).then(detail => detail?._id) ?? "";
-            const payload = request.payload as DetailsProps;
+            const payload = request.payload as DetailsProps & { categories?: string; images?: string };
             const updatedDetails: DetailsProps | null = {
                 pmId: placemarkId,
                 latitude: Number(payload.latitude),
@@ -101,11 +106,14 @@ export const dashboardController = {
                 title: payload.title,
                 description: payload.description,
             };
-            //
+            // parse CSV fields into arrays for placemark
+            const categories = payload.categories ? payload.categories.split(",").map((s) => s.trim()).filter(Boolean) : [];
+            const images = payload.images ? payload.images.split(",").map((s) => s.trim()).filter(Boolean) : [];
+
             console.log("Updated Details:", updatedDetails);
             await db.detailStore!.updateDetailsById(detailsId, updatedDetails!);
             
-            await db.placemarkStore!.updatePlacemarkById(placemarkId, { title: updatedDetails!.title });
+            await db.placemarkStore!.updatePlacemarkById(placemarkId, { title: updatedDetails!.title, categories, images });
             return h.redirect(`/dashboard/placemark/${  placemarkId}`);
         }
     }

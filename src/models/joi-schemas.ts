@@ -15,6 +15,9 @@ export const DetailsSpec = {
   latitude: Joi.string().required(),
   longitude: Joi.string().required(),
   description: Joi.number().allow("").optional(),
+  // categories/images are optional CSV strings provided by the edit form
+  categories: Joi.string().allow("").optional(),
+  images: Joi.string().allow("").optional(),
 };
 
 export const PlacemarkSpec = {

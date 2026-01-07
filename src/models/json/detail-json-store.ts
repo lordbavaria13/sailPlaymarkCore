@@ -46,16 +46,19 @@ export const detailJsonStore = {
     await db.write();
   },
 
-  async updateDetailsById(id: string, updatedDetails: DetailsProps): Promise<DetailsProps | null> {
+  async updateDetailsById(id: string, updatedDetails: Partial<DetailsProps>): Promise<DetailsProps | null> {
     await db.read();
     const detailsIndex = db.data.details.findIndex((d) => d._id === id);
     if (detailsIndex === -1) {
       return null; // Details not found
     }
     const details = db.data.details[detailsIndex];
-    const updatedDetailsObj = { ...details, ...updatedDetails };
-    db.data.details[detailsIndex] = updatedDetailsObj;
+    const merged: DetailsProps = {
+         ...details,
+         ...updatedDetails,
+    } as DetailsProps;
+    db.data.details[detailsIndex] = merged;
     await db.write();
-    return updatedDetailsObj;
+    return merged;
   },
 }

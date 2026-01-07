@@ -55,7 +55,7 @@ const init = async () => {
     layout: true,
     isCached: false,
   });
-    await db.init();
+    await db.init("mongo");
     server.route(webRoutes);
     await server.start();
     console.log("Server running on %s", server.info.uri);

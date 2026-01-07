@@ -57,6 +57,18 @@ COOKIE_NAME=your_cookie_name
 COOKIE_PASSWORD=long_secure_password_here
 ```
 
+The app can also use a MongoDB-backed store. When using `mongo` as the storage option (for example by calling `db.init("mongo")`), set the MongoDB connection string in the `DB` environment variable (or `db` for legacy compatibility). Example:
+
+```
+DB=mongodb://localhost:27017/sailPlacemarkCore
+```
+
+Note:
+- To run the test suite with the Mongo store, ensure a MongoDB server is running and reachable at the URI above (e.g., start `mongod`).
+- You can also point `DB` to an external MongoDB URI or use an in-memory MongoDB solution for CI/tests.
+
+A `.env.example` file is included at the project root with the minimal variables.
+
 ## Architecture (big picture)
 
 - HTTP server: Hapi configured in [src/server.ts](src/server.ts#L1-L120). Views are served with Handlebars via `@hapi/vision`.

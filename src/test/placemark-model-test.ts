@@ -1,28 +1,29 @@
 import { assert } from "chai";
 import { db } from "../models/db.js";
 import { maggie } from "./fixtures.js";
+import { assertSubset } from "./test-utils.js";
 
 suite("Placemark API tests", () => {
 
   setup(async () => {
-    db.init();
+    await db.init("mongo");
     await db.placemarkStore!.deleteAllPlacemarks();
     await db.userStore!.deleteAllUsers();
   });
 
   test("create a placemark", async () => {
     const user = await db.userStore!.addUser(maggie);
-    const placemark = { title: "Paradise", userId: user._id! };
+    const placemark = { title: "Paradise", userId: user._id!, categories: [], images: [] };
     const newPlacemark = await db.placemarkStore!.addPlacemarks(placemark);
-    assert.equal(newPlacemark, placemark);
+    assertSubset(placemark, newPlacemark);
   });
 
   test("delete all placemarks", async () => {
     const user = await db.userStore!.addUser(maggie);
     const testPlacemarks = [
-      { title: "A", userId: user._id! },
-      { title: "B", userId: user._id! },
-      { title: "C", userId: user._id! }
+      { title: "A", userId: user._id!, categories: [], images: [] },
+      { title: "B", userId: user._id!, categories: [], images: [] },
+      { title: "C", userId: user._id!, categories: [], images: [] }
     ];
     for (let i = 0; i < testPlacemarks.length; i += 1) {
       // eslint-disable-next-line no-await-in-loop
@@ -37,9 +38,9 @@ suite("Placemark API tests", () => {
 
   test("get a placemark - success", async () => {
     const user = await db.userStore!.addUser(maggie);
-    const placemark = { title: "Secret Cove", userId: user._id! };
+    const placemark = { title: "Secret Cove", userId: user._id!, categories: [], images: [] };
     const added = await db.placemarkStore!.addPlacemarks(placemark);
-    const returnedById = await db.placemarkStore!.getPlacemarkById(added._id!);
+    const returnedById = await db.placemarkStore!.getPlacemarkById(added!._id!);
     assert.deepEqual(added, returnedById);
     const returnedByUser = await db.placemarkStore!.getUserPlacemarks(user._id!);
     assert.equal(returnedByUser.length, 1);
@@ -48,14 +49,14 @@ suite("Placemark API tests", () => {
 
   test("delete One Placemark - success", async () => {
     const user = await db.userStore!.addUser(maggie);
-    const testPlacemarks = [
-      { title: "One", userId: user._id! },
-      { title: "Two", userId: user._id! },
-      { title: "Three", userId: user._id! }
+    const testPlacemarks: { title: string; userId: string; categories?: string[]; images?: string[] }[] = [
+      { title: "One", userId: user._id!, categories: [], images: [] },
+      { title: "Two", userId: user._id!, categories: [], images: [] },
+      { title: "Three", userId: user._id!, categories: [], images: [] }
     ];
     for (let i = 0; i < testPlacemarks.length; i += 1) {
       // eslint-disable-next-line no-await-in-loop
-      testPlacemarks[i] = await db.placemarkStore!.addPlacemarks(testPlacemarks[i]);
+      await db.placemarkStore!.addPlacemarks(testPlacemarks[i]);
     }
     const first = (await db.placemarkStore!.getAllPlacemarks())[0];
     await db.placemarkStore!.deletePlacemarkById(first._id!);
@@ -81,7 +82,7 @@ suite("Placemark API tests", () => {
 
   test("delete One Placemark - fail", async () => {
     const user = await db.userStore!.addUser(maggie);
-    const placemark = await db.placemarkStore!.addPlacemarks({ title: "Stay", userId: user._id! });
+    const placemark = await db.placemarkStore!.addPlacemarks({ title: "Stay", userId: user._id!, categories: [], images: [] });
     await db.placemarkStore!.deletePlacemarkById("bad-id");
     const all = await db.placemarkStore!.getAllPlacemarks();
     assert.equal(all.length, 1);
@@ -90,8 +91,8 @@ suite("Placemark API tests", () => {
 
   test("update placemark - success and fail", async () => {
     const user = await db.userStore!.addUser(maggie);
-    const placemark = await db.placemarkStore!.addPlacemarks({ title: "Old", userId: user._id! });
-    const updated = await db.placemarkStore!.updatePlacemarkById(placemark._id!, { title: "New" });
+    const placemark = await db.placemarkStore!.addPlacemarks({ title: "Old", userId: user._id!, categories: [], images: [] });
+    const updated = await db.placemarkStore!.updatePlacemarkById(placemark!._id!, { title: "New" });
     assert.isNotNull(updated);
     assert.equal(updated!.title, "New");
     const notFound = await db.placemarkStore!.updatePlacemarkById("bad-id", { title: "X" });

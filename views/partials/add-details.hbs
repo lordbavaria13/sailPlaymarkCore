@@ -1,23 +1,69 @@
 <form class="box" action="/dashboard/updateplacemark/{{pmId}}" method="POST">
-  <label>{{title}} Details:</label>
-  <div class="field is-horizontal">
-    <div class="field-body">
+  <h1 class="title is-4">{{title}} Details</h1>
+  
+  <div class="field">
+    <label class="label">Title</label>
+    <div class="control">
+      <input class="input" type="text" placeholder="Enter Title" name="title" value="{{title}}">
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column">
       <div class="field">
-        <label>Title: </label><input class="input" type="text" placeholder="Enter Title" name="title" value="{{title}}">
+        <label class="label">Latitude</label>
+        <div class="control">
+          <input class="input" type="text" placeholder="Enter latitude" name="latitude" value="{{latitude}}">
+        </div>
       </div>
+    </div>
+    <div class="column">
       <div class="field">
-        <label>Latitude: </label>
-        <input class="input" type="text" placeholder="Enter latitude" name="latitude" value="{{latitude}}">
-      </div>
-      <div class="field">
-        <label>Longitude: </label>
-        <input class="input" type="text" placeholder="Enter longitude" name="longitude" value="{{longitude}}">
-      </div>
-      <div class="field">
-        <label>Description: </label>
-        <input class="input" type="text" placeholder="Enter description" name="description" value="{{description}}">
+        <label class="label">Longitude</label>
+        <div class="control">
+          <input class="input" type="text" placeholder="Enter longitude" name="longitude" value="{{longitude}}">
+        </div>
       </div>
     </div>
   </div>
-  <button class="button is-primary">Add Details</button>
+
+  <div class="columns">
+    <div class="column">
+      <div class="field">
+        <label class="label">Category</label>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="categories">
+              <option value="marina">Marina</option>
+              <option value="anchorage">Anchorage</option>
+              <option value="beach">Beach</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="column">
+      <div class="field">
+        <label class="label">Images</label>
+        <div class="control">
+          <input class="input" type="text" placeholder="https://... , https://..." name="images" value="{{imagesCSV}}">
+        </div>
+        <p class="help">Comma-separated URLs</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Description</label>
+    <div class="control">
+      <textarea class="textarea" placeholder="Enter description" name="description" rows="6">{{description}}</textarea>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="control">
+      <button class="button is-primary is-fullwidth">Add Details</button>
+    </div>
+  </div>
 </form>

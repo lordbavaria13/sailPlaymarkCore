@@ -1,17 +1,18 @@
 import { assert } from "chai";
 import { db } from "../models/db.js";
 import { maggie, testUsers } from "./fixtures.js";
+import { assertSubset } from "./test-utils.js";
 
 suite("User API tests", () => {
 
   setup(async () => {
-    db.init();
+    await db.init("mongo");
     await db.userStore!.deleteAllUsers();
   });
 
   test("create a user", async () => {
     const newUser = await db.userStore!.addUser(maggie);
-    assert.equal(newUser, maggie);
+    assertSubset(newUser, maggie);
   });
 
    test("delete all users", async () => {
@@ -62,6 +63,10 @@ suite("User API tests", () => {
   });
 
     test("delete One User - fail", async () => {
+    for (let i = 0; i < testUsers.length; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      testUsers[i] = await db.userStore!.addUser(testUsers[i]);
+    }
     await db.userStore!.deleteUserById("bad-id");
     const allUsers = await db.userStore!.getAllUsers();
     assert.equal(testUsers.length, allUsers.length);

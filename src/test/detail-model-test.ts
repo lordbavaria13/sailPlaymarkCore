@@ -1,11 +1,13 @@
 import { assert } from "chai";
 import { db } from "../models/db.js";
 import { maggie } from "./fixtures.js";
+import { assertSubset } from "./test-utils.js";
+import { DetailsProps } from "../models/json/detail-json-store.js"; // Use the exported type
 
 suite("Details API tests", () => {
 
   setup(async () => {
-    db.init();
+    await db.init("mongo");
     await db.detailStore!.deleteAllDetails();
     await db.placemarkStore!.deleteAllPlacemarks();
     await db.userStore!.deleteAllUsers();
@@ -15,23 +17,23 @@ suite("Details API tests", () => {
     const user = await db.userStore!.addUser(maggie);
     const placemark = await db.placemarkStore!.addPlacemarks({ title: "P1", userId: user._id! });
     const details = {
-      pmId: placemark._id!,
+      pmId: placemark!._id!,
       latitude: 51.5,
       longitude: -0.1,
       title: "Tower",
       description: "Tall tower"
     };
     const newDetails = await db.detailStore!.addDetails(details);
-    assert.equal(newDetails, details);
+    assertSubset(details, newDetails);
   });
 
   test("delete all details", async () => {
     const user = await db.userStore!.addUser(maggie);
     const placemark = await db.placemarkStore!.addPlacemarks({ title: "P2", userId: user._id! });
     const testDetails = [
-      { pmId: placemark._id!, latitude: 1, longitude: 1, title: "A", description: "a" },
-      { pmId: placemark._id!, latitude: 2, longitude: 2, title: "B", description: "b" },
-      { pmId: placemark._id!, latitude: 3, longitude: 3, title: "C", description: "c" }
+      { pmId: placemark!._id!, latitude: 1, longitude: 1, title: "A", description: "a" },
+      { pmId: placemark!._id!, latitude: 2, longitude: 2, title: "B", description: "b" },
+      { pmId: placemark!._id!, latitude: 3, longitude: 3, title: "C", description: "c" }
     ];
     for (let i = 0; i < testDetails.length; i += 1) {
       // eslint-disable-next-line no-await-in-loop
@@ -48,30 +50,31 @@ suite("Details API tests", () => {
     const user = await db.userStore!.addUser(maggie);
     const placemark = await db.placemarkStore!.addPlacemarks({ title: "P3", userId: user._id! });
     const details = {
-      pmId: placemark._id!,
+      pmId: placemark!._id!,
       latitude: 10,
       longitude: 20,
       title: "Secret",
       description: "Hidden spot"
     };
     const added = await db.detailStore!.addDetails(details);
-    const returnedById = await db.detailStore!.getDetailsById(added._id!);
-    assert.deepEqual(added, returnedById);
-    const returnedByPm = await db.detailStore!.getDetailByPmId(placemark._id!);
-    assert.deepEqual(returnedByPm, added);
+    const returnedById = await db.detailStore!.getDetailsById(added!._id!);
+    assertSubset(details, added);
+    assertSubset(details, returnedById);
+    const returnedByPm = await db.detailStore!.getDetailByPmId(placemark!._id!);
+    assertSubset(details, returnedByPm);
   });
 
   test("delete One Details - success", async () => {
     const user = await db.userStore!.addUser(maggie);
     const placemark = await db.placemarkStore!.addPlacemarks({ title: "P4", userId: user._id! });
-    const testDetails = [
-      { pmId: placemark._id!, latitude: 1, longitude: 1, title: "One", description: "one" },
-      { pmId: placemark._id!, latitude: 2, longitude: 2, title: "Two", description: "two" },
-      { pmId: placemark._id!, latitude: 3, longitude: 3, title: "Three", description: "three" }
+    const testDetails: DetailsProps[] = [
+      { pmId: placemark!._id!, latitude: 1, longitude: 1, title: "One", description: "one" },
+      { pmId: placemark!._id!, latitude: 2, longitude: 2, title: "Two", description: "two" },
+      { pmId: placemark!._id!, latitude: 3, longitude: 3, title: "Three", description: "three" }
     ];
     for (let i = 0; i < testDetails.length; i += 1) {
       // eslint-disable-next-line no-await-in-loop
-      testDetails[i] = await db.detailStore!.addDetails(testDetails[i]);
+      testDetails[i] = (await db.detailStore!.addDetails(testDetails[i]))!;
     }
     const first = (await db.detailStore!.getAllDetails())[0];
     await db.detailStore!.deleteDetailsById(first._id!);
@@ -98,7 +101,7 @@ suite("Details API tests", () => {
   test("delete One Details - fail", async () => {
     const user = await db.userStore!.addUser(maggie);
     const placemark = await db.placemarkStore!.addPlacemarks({ title: "P5", userId: user._id! });
-    const details = await db.detailStore!.addDetails({ pmId: placemark._id!, latitude: 0, longitude: 0, title: "Stay", description: "stay" });
+    const details = await db.detailStore!.addDetails({ pmId: placemark!._id!, latitude: 0, longitude: 0, title: "Stay", description: "stay" });
     await db.detailStore!.deleteDetailsById("bad-id");
     const all = await db.detailStore!.getAllDetails();
     assert.equal(all.length, 1);
@@ -108,9 +111,9 @@ suite("Details API tests", () => {
   test("update details - success and fail", async () => {
     const user = await db.userStore!.addUser(maggie);
     const placemark = await db.placemarkStore!.addPlacemarks({ title: "P6", userId: user._id! });
-    const details = await db.detailStore!.addDetails({ pmId: placemark._id!, latitude: 5, longitude: 5, title: "Old", description: "Old desc" });
-    const updatedObj = { ...details, title: "New", description: "New desc" };
-    const updated = await db.detailStore!.updateDetailsById(details._id!, updatedObj);
+    const details = await db.detailStore!.addDetails({ pmId: placemark!._id!, latitude: 5, longitude: 5, title: "Old", description: "Old desc" });
+    const updatedObj = { ...details!, title: "New", description: "New desc" };
+    const updated = await db.detailStore!.updateDetailsById(details!._id!, updatedObj);
     assert.isNotNull(updated);
     assert.equal(updated!.title, "New");
     const notFound = await db.detailStore!.updateDetailsById("bad-id", updatedObj);
