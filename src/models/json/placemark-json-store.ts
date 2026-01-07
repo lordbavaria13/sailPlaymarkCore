@@ -49,5 +49,11 @@ export const placemarkJsonStore = {
     (db.data!.placemarks as PlacemarkProps[])[placemarkIndex] = updatedPlacemarkObj;
     await db.write();
     return updatedPlacemarkObj;
-  }
+  },
+
+  async deleteAllPlacemarks(): Promise<void> {
+    await db.read();
+    db.data!.placemarks = [];
+    await db.write();
+  },  
 };

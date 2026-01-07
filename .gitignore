@@ -123,3 +123,7 @@ dist
 
 # Lowdb database file
 src/models/json/db.json
+
+# Github
+.github/copilot_instructions.md
+.github/copilot-instructions.md
