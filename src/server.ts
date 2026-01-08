@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import Cookie from "@hapi/cookie";
 import Joi from "joi";
 import Inert from "@hapi/inert";
+import HapiSwagger from "hapi-swagger";
 import { webRoutes } from "./web-routes.js";
 import { db } from "./models/db.js";
 import { apiRoutes } from "./api-routes.js";
@@ -14,6 +15,13 @@ import { apiRoutes } from "./api-routes.js";
 import { accountsController } from "./controllers/accounts-controller.js";
 
 
+
+const swaggerOptions = {
+  info: {
+    title: "SailingPlacemark API",
+    version: "0.1",
+  },
+};
 
 
 const dirname = process.cwd();
@@ -34,6 +42,16 @@ const init = async () => {
     await server.register(Vision);
     await server.register(Cookie);
     await server.register(Inert);
+
+      await server.register([
+    Inert,
+    Vision,
+    {
+      plugin: HapiSwagger,
+      options: swaggerOptions,
+    },
+  ]);
+  
     server.validator(Joi);
 
     server.auth.strategy("session", "cookie", {

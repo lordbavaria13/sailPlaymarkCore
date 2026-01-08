@@ -1,39 +1,14 @@
 {
-  "users": [
-    {
-      "username": "abra",
-      "email": "abra@cadabra.de",
-      "password": "test",
-      "_id": "db819c95-5832-4846-a451-108bd02195b8"
-    }
-  ],
-  "placemarks": [
-    {
-      "title": "testpm",
-      "userId": "db819c95-5832-4846-a451-108bd02195b8",
-      "categories": [
-        "marina"
-      ],
-      "images": [],
-      "_id": "ac1649b4-26e8-44af-b568-851907be85a8"
-    }
-  ],
+  "users": [],
+  "placemarks": [],
   "details": [
     {
-      "pmId": "6a38040b-6013-4dcb-8930-9a0e3ed0c7ce",
+      "pmId": "5277207e-1b68-471b-956f-931dd065715f",
       "latitude": 51.5,
       "longitude": -0.1,
       "title": "Tower",
       "description": "Tall tower",
-      "_id": "133118ed-9d48-4cdb-94f1-7d796853a271"
-    },
-    {
-      "pmId": "ac1649b4-26e8-44af-b568-851907be85a8",
-      "latitude": 12,
-      "longitude": 22,
-      "description": "testdecp",
-      "_id": "cc315f33-53b6-4348-84d0-18fae00a4152",
-      "title": "testpm"
+      "_id": "98afcc06-a624-4b1e-abbf-2ded3f5cd125"
     }
   ]
 }

@@ -1,6 +1,8 @@
 import Boom from "@hapi/boom";
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { db } from "../models/db.js";
+import { DetailApiArray, DetailApiSpec } from "../models/joi-schemas.js";
+import { validationError } from "../models/logger.js";
 
 interface DetailsProps {
 	pmId: string;
@@ -22,6 +24,10 @@ export const detailApi = {
 				return Boom.serverUnavailable(`Database Error ${err}`);
 			}
 		},
+		tags: ["api"],
+		description: "Get all details",
+		notes: "Returns all details",
+		response: { schema: DetailApiArray, failAction: validationError },
 	},
 
 	findOne: {
@@ -37,6 +43,10 @@ export const detailApi = {
 				return Boom.serverUnavailable("No Detail with this id");
 			}
 		},
+		tags: ["api"],
+		description: "Get a specific detail",
+		notes: "Returns detail by id",
+		response: { schema: DetailApiSpec, failAction: validationError },
 	},
 
 	create: {
@@ -53,6 +63,11 @@ export const detailApi = {
 				return Boom.serverUnavailable("Database Error");
 			}
 		},
+		tags: ["api"],
+		description: "Create a detail",
+		notes: "Returns the newly created detail",
+		validate: { payload: DetailApiSpec, failAction: validationError },
+		response: { schema: DetailApiSpec, failAction: validationError },
 	},
 
 	deleteAll: {
@@ -65,6 +80,9 @@ export const detailApi = {
 				return Boom.serverUnavailable(`Database Error ${err}`);
 			}
 		},
+		tags: ["api"],
+		description: "Delete all details",
+		notes: "Removes all details",
 	},
 
 	deleteOne: {
@@ -81,5 +99,8 @@ export const detailApi = {
 				return Boom.serverUnavailable("No Detail with this id");
 			}
 		},
+		tags: ["api"],
+		description: "Delete a detail",
+		notes: "Deletes the detail with the given id",
 	},
 };

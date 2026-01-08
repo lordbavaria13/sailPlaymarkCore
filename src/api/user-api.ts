@@ -2,6 +2,8 @@ import Boom from "@hapi/boom";
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { db } from "../models/db.js";
 import { UserProps } from "../models/mongo/user-mongo-store.js";
+import { UserArray, UserSpec } from "../models/joi-schemas.js";
+import { validationError } from "../models/logger.js";
 
 export const userApi = {
   create: {
@@ -17,6 +19,11 @@ export const userApi = {
         return Boom.serverUnavailable(`Database Error ${err}`);
       }
     },
+    tags: ["api"],
+    description: "Create a User",
+    notes: "Returns the newly created user",
+    validate: { payload: UserSpec, failAction: validationError },
+    response: { schema: UserSpec, failAction: validationError },
   },
 
     findOne: {
@@ -32,6 +39,10 @@ export const userApi = {
         return Boom.serverUnavailable(`No User with this id ${err}`);
       }
     },
+    tags: ["api"],
+    description: "Get a specific user",
+    notes: "Returns user details",
+    response: { schema: UserSpec, failAction: validationError },
   },
 
   find: {
@@ -44,6 +55,10 @@ export const userApi = {
         return Boom.serverUnavailable(`Database Error ${err}`);
       }
     },
+    tags: ["api"],
+    description: "Get all userApi",
+    notes: "Returns details of all userApi",
+    response: { schema: UserArray, failAction: validationError },
   },
 
     deleteAll: {
@@ -56,5 +71,8 @@ export const userApi = {
         return Boom.serverUnavailable(`Database Error ${err}`);
       }
     },
+    tags: ["api"],
+    description: "Delete all userApi",
+    notes: "All userApi removed from Playtime",
   },
 };
