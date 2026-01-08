@@ -17,4 +17,7 @@ export const webRoutes:ServerRoute[] = [
 
   { method: "GET", path: "/dashboard", options: dashboardController.index },
   { method: "POST", path: "/dashboard/addplacemark", options: dashboardController.addPlacemark },
+
+  { method: "GET", path: "/{param*}", handler: { directory: { path: "./public" } }, options: { auth: false } }
+
 ];
