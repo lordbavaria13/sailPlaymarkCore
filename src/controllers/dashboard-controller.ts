@@ -92,7 +92,7 @@ export const dashboardController = {
       payload: DetailsSpec,
       options: { abortEarly: false },
             failAction: function (request:Request, h:ResponseToolkit, error?:Error) {
-                return h.view("playlist-view", { title: "Add track error", errors: error?.message }).takeover().code(400);
+                return h.view("dashboard-view", { title: "Add track error", errors: error?.message }).takeover().code(400);
             },
     },
         handler: async function(request: Request, h: ResponseToolkit) {

@@ -1,9 +1,9 @@
 import { assert } from "chai";
-import { db } from "../models/db.js";
-import { maggie } from "./fixtures.js";
-import { assertSubset } from "./test-utils.js";
+import { db } from "../../models/db.js";
+import { maggie } from "../fixtures.js";
+import { assertSubset } from "../test-utils.js";
 
-suite("Placemark API tests", () => {
+suite("Placemark Model tests", () => {
 
   setup(async () => {
     await db.init("mongo");

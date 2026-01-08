@@ -7,6 +7,37 @@
         <i class="fas fa-pen"></i>
       </span>
     </a>
+
+  {{#if placemark.categories}}
+  <div class="box">
+    <h2 class="title is-5">Categories</h2>
+    {{#if placemark.categories.length}}
+      <div class="tags">
+        {{#each placemark.categories}}
+          <span class="tag">{{this}}</span>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="has-text-grey">No categories</p>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  {{#if placemark.images}}
+  <div class="box">
+    <h2 class="title is-5">Images</h2>
+    {{#if placemark.images.length}}
+      <ul>
+        {{#each placemark.images}}
+          <li><a href="{{this}}" target="_blank" rel="noopener noreferrer">{{this}}</a></li>
+        {{/each}}
+      </ul>
+    {{else}}
+      <p class="has-text-grey">No images</p>
+    {{/if}}
+  </div>
+  {{/if}}
+
   <div>
   {{> list-details details}}
   </div>

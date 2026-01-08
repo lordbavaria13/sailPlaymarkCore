@@ -1,10 +1,10 @@
 import { assert } from "chai";
-import { db } from "../models/db.js";
-import { maggie } from "./fixtures.js";
-import { assertSubset } from "./test-utils.js";
-import { DetailsProps } from "../models/json/detail-json-store.js"; // Use the exported type
+import { db } from "../../models/db.js";
+import { maggie } from "../fixtures.js";
+import { assertSubset } from "../test-utils.js";
+import { DetailsProps } from "../../models/json/detail-json-store.js"; // Use the exported type
 
-suite("Details API tests", () => {
+suite("Detail Model tests", () => {
 
   setup(async () => {
     await db.init("mongo");

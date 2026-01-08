@@ -12,9 +12,10 @@ export const UserCredentialsSpec = {
 };
 
 export const DetailsSpec = {
-  latitude: Joi.string().required(),
-  longitude: Joi.string().required(),
-  description: Joi.number().allow("").optional(),
+  title: Joi.string().required(),
+  latitude: Joi.number().required(),
+  longitude: Joi.number().required(),
+  description: Joi.string().allow("").required(),
   // categories/images are optional CSV strings provided by the edit form
   categories: Joi.string().allow("").optional(),
   images: Joi.string().allow("").optional(),

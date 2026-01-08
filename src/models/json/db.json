@@ -1,29 +1,39 @@
 {
   "users": [
     {
-      "username": "MaggieSimpson",
-      "email": "maggie@simpson.com",
-      "password": "secret",
-      "_id": "1aaf874f-0704-49dd-ae91-e649388fd1a7"
+      "username": "abra",
+      "email": "abra@cadabra.de",
+      "password": "test",
+      "_id": "db819c95-5832-4846-a451-108bd02195b8"
     }
   ],
   "placemarks": [
     {
-      "title": "New",
-      "userId": "1aaf874f-0704-49dd-ae91-e649388fd1a7",
-      "categories": [],
+      "title": "testpm",
+      "userId": "db819c95-5832-4846-a451-108bd02195b8",
+      "categories": [
+        "marina"
+      ],
       "images": [],
-      "_id": "3d4b72a7-6786-46ff-9a7f-9f527d99ac1e"
+      "_id": "ac1649b4-26e8-44af-b568-851907be85a8"
     }
   ],
   "details": [
     {
-      "pmId": "57f4179a-5cdb-4bb0-82d9-36ae761e112c",
-      "latitude": 5,
-      "longitude": 5,
-      "title": "New",
-      "description": "New desc",
-      "_id": "9e1eab9e-aa6f-4b46-8c08-a800ba3681a4"
+      "pmId": "6a38040b-6013-4dcb-8930-9a0e3ed0c7ce",
+      "latitude": 51.5,
+      "longitude": -0.1,
+      "title": "Tower",
+      "description": "Tall tower",
+      "_id": "133118ed-9d48-4cdb-94f1-7d796853a271"
+    },
+    {
+      "pmId": "ac1649b4-26e8-44af-b568-851907be85a8",
+      "latitude": 12,
+      "longitude": 22,
+      "description": "testdecp",
+      "_id": "cc315f33-53b6-4348-84d0-18fae00a4152",
+      "title": "testpm"
     }
   ]
 }

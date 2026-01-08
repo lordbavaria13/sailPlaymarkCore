@@ -7,6 +7,7 @@ import Cookie from "@hapi/cookie";
 import Joi from "joi";
 import { webRoutes } from "./web-routes.js";
 import { db } from "./models/db.js";
+import { apiRoutes } from "./api-routes.js";
 
 import { accountsController } from "./controllers/accounts-controller.js";
 
@@ -24,7 +25,7 @@ if (result.error) {
 const init = async () => {
 
     const server = Hapi.server({
-        port: 3000,
+        port: process.env.PORT || 3000,
         host: "localhost"
     });
 
@@ -55,8 +56,10 @@ const init = async () => {
     layout: true,
     isCached: false,
   });
-    await db.init("mongo");
+    const storeType = (process.env.STORE_TYPE ?? "mongo") as "mongo" | "json";
+    await db.init(storeType);
     server.route(webRoutes);
+    server.route(apiRoutes as Hapi.ServerRoute[]);
     await server.start();
     console.log("Server running on %s", server.info.uri);
 };
@@ -67,4 +70,4 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
 });
 
-init();
+init();// modified to trigger restart
