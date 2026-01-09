@@ -33,7 +33,10 @@
         <label class="label">Category</label>
         <div class="control">
           <div class="select is-fullwidth">
-            <select name="categories">
+            <select name="category">
+              {{#if category}}
+                <option value="{{category}}" selected>{{category}}</option>
+              {{/if}}
               <option value="marina">Marina</option>
               <option value="anchorage">Anchorage</option>
               <option value="beach">Beach</option>
@@ -47,7 +50,7 @@
       <div class="field">
         <label class="label">Images</label>
         <div class="control">
-          <input class="input" type="text" placeholder="https://... , https://..." name="images" value="{{imagesCSV}}">
+          <input class="input" type="text" placeholder="https://... , https://..." name="images" value="{{images}}">
         </div>
         <p class="help">Comma-separated URLs</p>
       </div>

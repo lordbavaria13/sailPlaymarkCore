@@ -4,7 +4,7 @@ import { Placemark } from "./placemark.js";
 interface PlacemarkProps {
   title: string;
   userId: string;
-  categories?: string[];
+  category?: string;
   images?: string[];
   _id?: string;
 }
@@ -33,7 +33,7 @@ export const placemarkMongoStore = {
   },
 
   async getUserPlacemarks(id: string) {
-    const placemarks = await Placemark.find({ userid: id }).select("-__v").lean();
+    const placemarks = await Placemark.find({ userId: id }).select("-__v").lean();
     return placemarks;
   },
 

@@ -7,7 +7,7 @@ import { validationError } from "../models/logger.js";
 interface PlacemarkProps {
   title: string;
   userId: string;
-  categories?: string[];
+  category?: string;
   images?: string[];
   _id?: string;
 }

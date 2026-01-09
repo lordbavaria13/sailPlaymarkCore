@@ -4,7 +4,7 @@ import { db } from "./store-utils.js";
 export interface PlacemarkProps {
   title: string;
   userId: string;
-  categories?: string[];
+  category?: string;
   images?: string[];
   _id?: string;
 }
@@ -18,7 +18,7 @@ export const placemarkJsonStore = {
   async addPlacemarks(placemark: PlacemarkProps): Promise<PlacemarkProps> {
     await db.read();
     // ensure defaults for new optional fields
-    if (!placemark.categories) placemark.categories = [];
+    if (!placemark.category) placemark.category = "marina";
     if (!placemark.images) placemark.images = [];
     placemark._id = v4();
     db.data!.placemarks.push(placemark);
@@ -54,7 +54,7 @@ export const placemarkJsonStore = {
     const merged: PlacemarkProps = {
       ...placemark,
       ...updatedPlacemark,
-      categories: updatedPlacemark.categories ?? placemark.categories ?? [],
+      category: updatedPlacemark.category ?? placemark.category ?? "marina",
       images: updatedPlacemark.images ?? placemark.images ?? [],
     };
     (db.data!.placemarks as PlacemarkProps[])[placemarkIndex] = merged;

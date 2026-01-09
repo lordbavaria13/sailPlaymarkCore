@@ -4,6 +4,7 @@ export interface UserProps {
   username: string;
   password: string;
   email: string;
+  isAdmin?: boolean;
   _id?: string;
 }
 

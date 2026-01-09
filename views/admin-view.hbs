@@ -1,0 +1,32 @@
+{{> menu }}
+
+<section class="section">
+  <h1 class="title">Admin Panel</h1>
+
+  <div class="box">
+    <h2 class="title is-5">Users</h2>
+
+    <table class="table is-fullwidth is-striped">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Admin</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each users}}
+          <tr>
+            <td>{{username}}</td>
+            <td>{{email}}</td>
+            <td>{{#if isAdmin}}yes{{else}}no{{/if}}</td>
+            <td class="has-text-right">
+              <a class="button is-small is-danger" href="/admin/deleteuser/{{_id}}">Remove</a>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</section>

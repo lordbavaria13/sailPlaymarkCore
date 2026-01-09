@@ -79,6 +79,28 @@ const init = async () => {
   });
     const storeType = (process.env.STORE_TYPE ?? "mongo") as "mongo" | "json";
     await db.init(storeType);
+
+    // Basic admin bootstrap (optional).
+    // Set ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD in .env to enable.
+    try {
+      const adminUsername = process.env.ADMIN_USERNAME;
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      if (adminUsername && adminEmail && adminPassword) {
+        const existing = await db.userStore!.getUserByEmail(adminEmail);
+        if (!existing) {
+          await db.userStore!.addUser({
+            username: adminUsername,
+            email: adminEmail,
+            password: adminPassword,
+            isAdmin: true,
+          });
+        }
+      }
+    } catch (err) {
+      console.log("Admin bootstrap error", err);
+    }
+
     server.route(webRoutes);
     server.route(apiRoutes as Hapi.ServerRoute[]);
     await server.start();

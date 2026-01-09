@@ -39,7 +39,12 @@ export const dashboardController = {
             if (!loggedInUser || !loggedInUser._id) {
                 throw new Error("User not authenticated");
             }
-            const newPlacemark = await db.placemarkStore!.addPlacemarks({ title: payload.title ?? "", userId: loggedInUser._id! });
+            const newPlacemark = await db.placemarkStore!.addPlacemarks({
+                title: payload.title ?? "",
+                userId: loggedInUser._id!,
+                category: "marina",
+                images: [],
+            });
             if (!newPlacemark) {
                 return h.view("dashboard-view", { title: "Add Placemark error", errors: "Failed to create placemark." }).takeover().code(400);
             }
@@ -65,26 +70,28 @@ export const dashboardController = {
 
     showPlacemarkDetails: {
         handler: async function(request: Request, h: ResponseToolkit) {
+            const loggedInUser = request.auth.credentials as { _id?: string; isAdmin?: boolean };
             const placemarkId = request.params.id;
             const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId);   
             console.log("Placemark ID:", placemarkId);
             const details = await db.detailStore!.getDetailByPmId(placemarkId);
             console.log("Details:", details);
-            return h.view("placemark-detail-view", { details: details, placemark: placemark } );
+            return h.view("placemark-detail-view", { details: details, placemark: placemark, user: loggedInUser } );
         }
     },
 
         showEditPlacemarkDetails: {
         handler: async function(request: Request, h: ResponseToolkit) {
+            const loggedInUser = request.auth.credentials as { _id?: string; isAdmin?: boolean };
             const detailsId = request.params.id;
             const details = await db.detailStore!.getDetailsById(detailsId);
             if (!details) {
-                return h.view("edit-placemark-view", { details: null });
+                return h.view("edit-placemark-view", { details: null, user: loggedInUser });
             }
             const placemark = await db.placemarkStore!.getPlacemarkById(details.pmId);
-            const categoriesCSV = placemark?.categories ? placemark.categories.join(", ") : "";
-            const imagesCSV = placemark?.images ? placemark.images.join(", ") : "";
-            return h.view("edit-placemark-view", { details: details, placemark: placemark, categoriesCSV, imagesCSV });
+            const category = placemark?.category ?? "marina";
+            const images = placemark?.images ? placemark.images.join(", ") : "";
+            return h.view("edit-placemark-view", { details: details, placemark: placemark, category, images, user: loggedInUser });
         }
     },
     updatePlacemarkDetails: {
@@ -92,13 +99,13 @@ export const dashboardController = {
       payload: DetailsSpec,
       options: { abortEarly: false },
             failAction: function (request:Request, h:ResponseToolkit, error?:Error) {
-                return h.view("dashboard-view", { title: "Add track error", errors: error?.message }).takeover().code(400);
+                return h.view("dashboard-view", { title: "Update Placemark Error", errors: error?.message }).takeover().code(400);
             },
     },
         handler: async function(request: Request, h: ResponseToolkit) {
             const placemarkId = request.params.id;
             const detailsId = await db.detailStore!.getDetailByPmId(placemarkId).then(detail => detail?._id) ?? "";
-            const payload = request.payload as DetailsProps & { categories?: string; images?: string };
+            const payload = request.payload as DetailsProps & { category?: string; images?: string };
             const updatedDetails: DetailsProps | null = {
                 pmId: placemarkId,
                 latitude: Number(payload.latitude),
@@ -106,14 +113,15 @@ export const dashboardController = {
                 title: payload.title,
                 description: payload.description,
             };
-            // parse CSV fields into arrays for placemark
-            const categories = payload.categories ? payload.categories.split(",").map((s) => s.trim()).filter(Boolean) : [];
+            
+            const category = (payload.category ?? "").toLowerCase();
+ 
             const images = payload.images ? payload.images.split(",").map((s) => s.trim()).filter(Boolean) : [];
 
             console.log("Updated Details:", updatedDetails);
             await db.detailStore!.updateDetailsById(detailsId, updatedDetails!);
             
-            await db.placemarkStore!.updatePlacemarkById(placemarkId, { title: updatedDetails!.title, categories, images });
+            await db.placemarkStore!.updatePlacemarkById(placemarkId, { title: updatedDetails!.title, category, images });
             return h.redirect(`/dashboard/placemark/${  placemarkId}`);
         }
     }

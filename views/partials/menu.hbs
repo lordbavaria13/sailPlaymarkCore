@@ -7,6 +7,9 @@
       <div class="navbar-item">
         <div class="buttons">
           <a id="dashboard" class="button" href="/dashboard"> Dashboard </a>
+          {{#if user.isAdmin}}
+            <a id="admin" class="button" href="/admin"> Admin </a>
+          {{/if}}
           <a id="logout" class="button" href="/logout"> Logout </a>
         </div>
       </div>
@@ -14,5 +17,7 @@
   </div>
 </nav>
 <script>
-  document.getElementById("{{active}}").classList.add("is-primary");
+  const activeId = "{{active}}";
+  const activeEl = document.getElementById(activeId);
+  if (activeEl) activeEl.classList.add("is-primary");
 </script>

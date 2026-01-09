@@ -2,6 +2,7 @@ import {ServerRoute} from "@hapi/hapi";
 
 import { dashboardController } from "./controllers/dashboard-controller.js";
 import { accountsController } from "./controllers/accounts-controller.js";
+import { adminController } from "./controllers/admin-controller.js";
 
 export const webRoutes:ServerRoute[] = [
   { method: "GET", path: "/", options: accountsController.index },
@@ -17,6 +18,9 @@ export const webRoutes:ServerRoute[] = [
 
   { method: "GET", path: "/dashboard", options: dashboardController.index },
   { method: "POST", path: "/dashboard/addplacemark", options: dashboardController.addPlacemark },
+
+  { method: "GET", path: "/admin", options: adminController.index },
+  { method: "GET", path: "/admin/deleteuser/{id}", options: adminController.deleteUser },
 
   { method: "GET", path: "/{param*}", handler: { directory: { path: "./public" } }, options: { auth: false } }
 

@@ -32,12 +32,12 @@ export const mozart = {
 };
 
 export const testPlacemarks = [
-      { title: "A", userId: "", categories: [], images: [] },
-      { title: "B", userId: "", categories: [], images: [] },
-      { title: "C", userId: "", categories: [], images: [] }
+  { title: "A", userId: "", category: "marina", images: [] },
+  { title: "B", userId: "", category: "marina", images: [] },
+  { title: "C", userId: "", category: "marina", images: [] }
     ];
 
-export const testPlacemark = { title: "Test Placemark", userId: "", categories: [], images: [] };
+export const testPlacemark = { title: "Test Placemark", userId: "", category: "marina", images: [] };
 
 export const concerto = {
   pmId: "",
