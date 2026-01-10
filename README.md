@@ -8,8 +8,11 @@ You can store your specific sailing placemarks like marinas, anchorages and othe
 ## Features
 - Signup & Login
 - Create Placemarks with Name, Description and Location
+- **Categorize placemarks** (Marina, Anchorage, Beach, Other)
+- **Add images** to placemarks via URL
 - Browse through your placemarks
-- Edit Placemarks
+- Edit Placemarks and View Details
+- **Admin Dashboard**: View list of users and delete users (Admin privileges required)
 
 **Quick links**
 - Entry: [src/server.ts](src/server.ts#L1-L120)
@@ -57,6 +60,14 @@ COOKIE_NAME=your_cookie_name
 COOKIE_PASSWORD=long_secure_password_here
 ```
 
+To create an admin account on startup, add the following variables:
+
+```
+ADMIN_USERNAME=admin
+ADMIN_EMAIL=admin@admin.com
+ADMIN_PASSWORD=secret
+```
+
 The app can also use a MongoDB-backed store. When using `mongo` as the storage option (for example by calling `db.init("mongo")`), set the MongoDB connection string in the `DB` environment variable (or `db` for legacy compatibility). Example:
 
 ```
@@ -74,7 +85,7 @@ A `.env.example` file is included at the project root with the minimal variables
 - HTTP server: Hapi configured in [src/server.ts](src/server.ts#L1-L120). Views are served with Handlebars via `@hapi/vision`.
 - Routes: centralized in [src/web-routes.ts](src/web-routes.ts#L1-L120). Each route maps to a controller `options` object.
 - Controllers: located under `src/controllers`. Controllers export route option objects (properties: `auth`, `handler`, `validate`, etc.). Example controllers: `accountsController` and `dashboardController`.
-- Data layer: lightweight JSON-backed stores using LowDB under `src/models/json`. Stores expose CRUD methods and are wired through the `db` object in [src/models/db.ts](src/models/db.ts#L1-L120).
+- Data layer: Flexible storage system supporting both lightweight JSON-backed stores (using LowDB) and MongoDB. Stores expose CRUD methods and are wired through the `db` object in [src/models/db.ts](src/models/db.ts#L1-L120).
 - Views: Handlebars templates in `/views` with partials under `/views/partials` and layouts under `/views/layouts`.
 
 Data flow summary:
