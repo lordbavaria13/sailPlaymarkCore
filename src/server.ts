@@ -35,8 +35,8 @@ if (result.error) {
 const init = async () => {
 
     const server = Hapi.server({
-        port: process.env.PORT || 3000,
-        host: "localhost"
+        port: process.env.PORT || 10000,
+        host: "0.0.0.0"
     });
 
     await server.register(Vision);
@@ -80,8 +80,6 @@ const init = async () => {
     const storeType = (process.env.STORE_TYPE ?? "mongo") as "mongo" | "json";
     await db.init(storeType);
 
-    // Basic admin bootstrap (optional).
-    // Set ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD in .env to enable.
     try {
       const adminUsername = process.env.ADMIN_USERNAME;
       const adminEmail = process.env.ADMIN_EMAIL;
@@ -113,4 +111,4 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
 });
 
-init();// modified to trigger restart
+init();
