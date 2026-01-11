@@ -31,6 +31,7 @@ export const DetailsSpec = Joi.object()
     // categories/images are optional CSV strings provided by the edit form
     category: Joi.string().valid("marina", "anchorage", "beach", "other").lowercase().required().example("marina"),
     images: Joi.string().allow("").example("https://example.com/a.jpg, https://example.com/b.jpg").optional(),
+    private: Joi.boolean().optional(),
   })
   .label("Detail");
 

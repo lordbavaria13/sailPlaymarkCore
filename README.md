@@ -6,12 +6,16 @@ Hapi + Handlebars applikation for managing sailing placemarks.
 You can store your specific sailing placemarks like marinas, anchorages and other good spots.
 
 ## Features
-- Signup & Login
+- Signup & Login (with secure password hashing and salting)
 - Create Placemarks with Name, Description and Location
 - **Categorize placemarks** (Marina, Anchorage, Beach, Other)
 - **Add images** to placemarks via URL
 - Browse through your placemarks
-- Edit Placemarks and View Details
+- Edit Placemarks
+- Visibility Toggle: Set placemarks as Private or Public
+- Interactive Dashboard Map: View all visible placemarks on a map with category filtering
+- Placemark Detail Map: View location of individual placemarks
+- Public Placemarks: View public placemarks from all users alongside your own
 - **Admin Dashboard**: View list of users and delete users (Admin privileges required)
 
 **Quick links**
@@ -21,6 +25,9 @@ You can store your specific sailing placemarks like marinas, anchorages and othe
 - Stores: [src/models/json](src/models/json)
 
 ## Getting started
+
+Live-Demo on: https://sailplacemarkcore.onrender.com/
+Open-API(Swagger) on: https://sailplacemarkcore.onrender.com/documentation
 
 Prerequisites: Node.js (16+ recommended) and npm.
 
@@ -99,6 +106,8 @@ Data flow summary:
 - Store usage: After `await db.init()` the `db` object has `placemarkStore`, `userStore`, `detailStore`. Use those stores instead of direct file access.
 - Imports use `.js` extensions in TypeScript sources (to match emitted JS in `dist/`). Keep this pattern when adding new imports.
 - IDs: Stores generate UUIDs (`_id`) for records; controller code expects `_id` fields.
+- Security: User passwords are automatically hashed and salted using `bcryptjs` upon registration. Hashed passwords are saved in the database, and `bcryptjs` is used to compare input passwords during login.
+
 
 
 ## Scripts
@@ -107,10 +116,18 @@ Data flow summary:
 - `npm run build` — compile TypeScript to `dist`
 - `npm run start` — build then run `node dist/server.js`
 - `npm test` — run Mocha tests under `src/test`
+- `npx playwright test` — run E2E tests (requires running server or uses webServer config)
 
 ## Tests
 
-Tests are Mocha + TypeScript. Test live under `src/test`. Run `npm test`.
+### Unit & Integration (Mocha)
+Tests live under `src/test`. Run `npm test`.
+
+### End-to-End (Playwright)
+Tests live under `src/tests/`.
+- Run all tests: `npx playwright test`
+- Run specific test: `npx playwright test -g "signup"`
+- Show report: `npx playwright show-report`
 
 ## Debugging tips
 

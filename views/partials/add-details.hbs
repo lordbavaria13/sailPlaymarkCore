@@ -58,6 +58,20 @@
   </div>
 
   <div class="field">
+    <label class="label">Visibility</label>
+    <div class="control">
+      <label class="radio">
+        <input type="radio" name="private" value="false" {{#unless private}}checked{{/unless}}>
+        Public
+      </label>
+      <label class="radio">
+        <input type="radio" name="private" value="true" {{#if private}}checked{{/if}}>
+        Private
+      </label>
+    </div>
+  </div>
+
+  <div class="field">
     <label class="label">Description</label>
     <div class="control">
       <textarea class="textarea" placeholder="Enter description" name="description" rows="6">{{description}}</textarea>

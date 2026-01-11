@@ -2,8 +2,85 @@
 
 <section class="section">
   <h1 class="title">Welcome to your Dashboard</h1>
+  
+  <div class="box">
+    <div class="level">
+      <div class="level-left">
+         <h2 class="title is-5">Map</h2>
+      </div>
+      <div class="level-right">
+        <div class="field is-horizontal">
+          <div class="field-label is-normal">
+            <label class="label">Filter Category</label>
+          </div>
+          <div class="field-body">
+            <div class="field">
+              <div class="control">
+                <div class="select">
+                  <select id="category-filter">
+                    <option value="all">All</option>
+                    <option value="marina">Marina</option>
+                    <option value="anchorage">Anchorage</option>
+                    <option value="beach">Beach</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="map-dashboard" style="height: 400px; width: 100%;"></div>
+  </div>
+
   <div>
   {{> list-placemarks}}
   {{> add-placemark}}
   </div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize map
+    const map = L.map('map-dashboard').setView([51.505, -0.09], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Get placemarks data
+    const placemarks = {{{json placemarks}}};
+    const markers = [];
+    const categoryFilter = document.getElementById('category-filter');
+
+    function renderMarkers(filter) {
+      // Clear existing markers
+      markers.forEach(m => map.removeLayer(m));
+      markers.length = 0;
+
+      placemarks.forEach(pm => {
+        if (filter === 'all' || pm.category === filter) {
+          if (pm.latitude && pm.longitude && (pm.latitude !== 0 || pm.longitude !== 0)) {
+            const marker = L.marker([pm.latitude, pm.longitude])
+              .bindPopup(`<b>${pm.title}</b><br>${pm.category}`);
+            marker.addTo(map);
+            markers.push(marker);
+          }
+        }
+      });
+      
+      if (markers.length > 0) {
+          const group = new L.featureGroup(markers);
+          map.fitBounds(group.getBounds());
+      }
+    }
+
+    // Initial render
+    renderMarkers('all');
+
+    // Filter change event
+    categoryFilter.addEventListener('change', (e) => {
+      renderMarkers(e.target.value);
+    });
+  });
+</script>

@@ -129,3 +129,6 @@ src/models/json/db.json
 .github/copilot-instructions.md
 
 db/
+
+# E2E test files
+src/test-results/
