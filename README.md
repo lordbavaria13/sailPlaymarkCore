@@ -105,10 +105,18 @@ Data flow summary:
 - `npm run build` — compile TypeScript to `dist`
 - `npm run start` — build then run `node dist/server.js`
 - `npm test` — run Mocha tests under `src/test`
+- `npx playwright test` — run E2E tests (requires running server or uses webServer config)
 
 ## Tests
 
-Tests are Mocha + TypeScript. Test live under `src/test`. Run `npm test`.
+### Unit & Integration (Mocha)
+Tests live under `src/test`. Run `npm test`.
+
+### End-to-End (Playwright)
+Tests live under `src/tests/`.
+- Run all tests: `npx playwright test`
+- Run specific test: `npx playwright test -g "signup"`
+- Show report: `npx playwright show-report`
 
 ## Debugging tips
 
