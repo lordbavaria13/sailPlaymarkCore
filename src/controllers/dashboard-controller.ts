@@ -11,13 +11,21 @@ async function getDashboardData(request: Request) {
     const userPlacemarks = await db.placemarkStore!.getUserPlacemarks(loggedInUser._id!) as PlacemarkProps[];
     const publicPlacemarks = await db.placemarkStore!.getPublicPlacemarks() as PlacemarkProps[];
     
-    // Merge and ensure uniqueness by _id
     const allPlacemarks = [...userPlacemarks, ...publicPlacemarks];
     const uniquePlacemarks = Array.from(new Map(allPlacemarks.map(item => [item._id, item])).values());
     
+    const placemarksWithDetails = await Promise.all(uniquePlacemarks.map(async (p) => {
+        const detail = await db.detailStore!.getDetailByPmId(p._id!);
+        return {
+            ...p,
+            latitude: detail?.latitude ?? 0,
+            longitude: detail?.longitude ?? 0
+        };
+    }));
+
     return {
         title: "Sailing Dashboard",
-        placemarks: uniquePlacemarks,
+        placemarks: placemarksWithDetails,
         user: loggedInUser,  
     };
 }
@@ -115,7 +123,7 @@ export const dashboardController = {
             }
             const category = placemark?.category ?? "marina";
             const images = placemark?.images ? placemark.images.join(", ") : "";
-            // Default private to true if not explicitly false
+            
             const isPrivate = placemark?.private !== false;
             return h.view("edit-placemark-view", { details: details, placemark: placemark, category, images, private: isPrivate, user: loggedInUser });
         }

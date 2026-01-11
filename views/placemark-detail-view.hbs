@@ -38,7 +38,31 @@
   </div>
   {{/if}}
 
+  <div class="box">
+     <h2 class="title is-5">Location</h2>
+     <div id="map-detail" style="height: 300px; width: 100%;"></div>
+  </div>
+
   <div>
   {{> list-details details}}
   </div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const lat = Number("{{details.latitude}}");
+    const lng = Number("{{details.longitude}}");
+    const title = "{{placemark.title}}";
+    
+    if (lat && lng && (lat !== 0 || lng !== 0)) {
+        const map = L.map('map-detail').setView([lat, lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        L.marker([lat, lng]).addTo(map)
+          .bindPopup(title);
+    } else {
+        document.getElementById('map-detail').innerHTML = "<p class='has-text-grey'>No valid location data available</p>";
+    }
+  });
+</script>

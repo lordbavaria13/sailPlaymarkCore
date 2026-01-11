@@ -65,6 +65,9 @@ const init = async () => {
     });
     server.auth.default("session");
 
+    Handlebars.registerHelper("json", (context) => 
+         (JSON.stringify(context))
+    );
 
     server.views({
     engines: {
@@ -80,7 +83,6 @@ const init = async () => {
     const storeType = (process.env.STORE_TYPE ?? "mongo") as "mongo" | "json";
     await db.init(storeType);
 
-    // Basic admin bootstrap (optional).
     // Set ADMIN_USERNAME, ADMIN_EMAIL, ADMIN_PASSWORD in .env to enable.
     try {
       const adminUsername = process.env.ADMIN_USERNAME;
@@ -113,4 +115,4 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
 });
 
-init();// modified to trigger restart
+init();
