@@ -6,6 +6,7 @@ export interface PlacemarkProps {
   userId: string;
   category?: string;
   images?: string[];
+  private?: boolean;
   _id?: string;
 }
 
@@ -15,12 +16,19 @@ export const placemarkJsonStore = {
     return (db.data!.placemarks as PlacemarkProps[]);
   },
 
+  async getPublicPlacemarks(): Promise<PlacemarkProps[]> {
+    await db.read();
+    return (db.data!.placemarks as PlacemarkProps[]).filter((p) => !p.private);
+  },
+
   async addPlacemarks(placemark: PlacemarkProps): Promise<PlacemarkProps> {
     await db.read();
     // ensure defaults for new optional fields
     if (!placemark.category) placemark.category = "marina";
     if (!placemark.images) placemark.images = [];
+    if (typeof placemark.private === "undefined") placemark.private = true;
     placemark._id = v4();
+
     db.data!.placemarks.push(placemark);
     await db.write();
     return placemark;

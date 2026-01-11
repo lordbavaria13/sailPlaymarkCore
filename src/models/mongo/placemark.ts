@@ -7,6 +7,7 @@ const placemarkSchema = new Schema({
   userId: String,
   category: { type: String, default: "marina" },
   images: [String],
+  private: { type: Boolean, default: true },
   _id: String,
 });
 

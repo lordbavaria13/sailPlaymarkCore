@@ -19,6 +19,9 @@ You can store your specific sailing placemarks like marinas, anchorages and othe
 
 ## Getting started
 
+Live-Demo on: https://sailplacemarkcore.onrender.com/
+Open-API(Swagger) on: https://sailplacemarkcore.onrender.com/documentation
+
 Prerequisites: Node.js (16+ recommended) and npm.
 
 Install dependencies:

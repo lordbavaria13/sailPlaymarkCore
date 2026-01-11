@@ -6,12 +6,18 @@ interface PlacemarkProps {
   userId: string;
   category?: string;
   images?: string[];
+  private?: boolean;
   _id?: string;
 }
 
 export const placemarkMongoStore = {
   async getAllPlacemarks() {
     const placemarks = await Placemark.find().select("-__v").lean();
+    return placemarks;
+  },
+
+  async getPublicPlacemarks() {
+    const placemarks = await Placemark.find({ private: false }).select("-__v").lean();
     return placemarks;
   },
 
