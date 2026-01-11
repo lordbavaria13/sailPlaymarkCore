@@ -2,6 +2,7 @@ import Hapi from "@hapi/hapi";
 import Vision from "@hapi/vision";
 import Handlebars from "handlebars";
 import dotenv from "dotenv";
+import bcrypt from "bcryptjs";
 
 import Cookie from "@hapi/cookie";
 import Joi from "joi";
@@ -91,10 +92,12 @@ const init = async () => {
       if (adminUsername && adminEmail && adminPassword) {
         const existing = await db.userStore!.getUserByEmail(adminEmail);
         if (!existing) {
+          const salt = await bcrypt.genSalt(10);
+          const hashedPassword = await bcrypt.hash(adminPassword, salt);
           await db.userStore!.addUser({
             username: adminUsername,
             email: adminEmail,
-            password: adminPassword,
+            password: hashedPassword,
             isAdmin: true,
           });
         }

@@ -6,10 +6,14 @@ Hapi + Handlebars applikation for managing sailing placemarks.
 You can store your specific sailing placemarks like marinas, anchorages and other good spots.
 
 ## Features
-- Signup & Login
+- Signup & Login (with secure password hashing and salting)
 - Create Placemarks with Name, Description and Location
 - Browse through your placemarks
 - Edit Placemarks
+- Visibility Toggle: Set placemarks as Private or Public
+- Interactive Dashboard Map: View all visible placemarks on a map with category filtering
+- Placemark Detail Map: View location of individual placemarks
+- Public Placemarks: View public placemarks from all users alongside your own
 
 **Quick links**
 - Entry: [src/server.ts](src/server.ts#L1-L120)
@@ -91,6 +95,8 @@ Data flow summary:
 - Store usage: After `await db.init()` the `db` object has `placemarkStore`, `userStore`, `detailStore`. Use those stores instead of direct file access.
 - Imports use `.js` extensions in TypeScript sources (to match emitted JS in `dist/`). Keep this pattern when adding new imports.
 - IDs: Stores generate UUIDs (`_id`) for records; controller code expects `_id` fields.
+- Security: User passwords are automatically hashed and salted using `bcryptjs` upon registration. Hashed passwords are saved in the database, and `bcryptjs` is used to compare input passwords during login.
+
 
 
 ## Scripts

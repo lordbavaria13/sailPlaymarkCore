@@ -1,9 +1,10 @@
 
 import { Request, ResponseToolkit } from "@hapi/hapi";
-
+import bcrypt from "bcryptjs";
 import { db } from "../models/db.js";
 import { UserProps } from "../models/json/user-json-store.js";
 import { UserCredentialsSpec, UserSpec } from "../models/joi-schemas.js";
+
 
 
 export const accountsController = {
@@ -35,6 +36,8 @@ export const accountsController = {
       if (!db.userStore) {
         return h.redirect("/");
       }
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(user.password, salt);
       await db.userStore.addUser(user);
       return h.redirect("/");
     },
@@ -60,7 +63,11 @@ export const accountsController = {
         return h.redirect("/");
       }
       const user = await db.userStore.getUserByUsername(username);
-      if (!user || user.password !== password) {
+      if (!user) {
+        return h.redirect("/");
+      }
+      const isValid = await bcrypt.compare(password, user.password);
+      if (!isValid) {
         return h.redirect("/");
       }
       // create session
