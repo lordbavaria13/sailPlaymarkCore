@@ -8,12 +8,16 @@ You can store your specific sailing placemarks like marinas, anchorages and othe
 ## Features
 - Signup & Login (with secure password hashing and salting)
 - Create Placemarks with Name, Description and Location
+- **Categorize placemarks** (Marina, Anchorage, Beach, Other)
+- **Add images** to placemarks via URL
 - Browse through your placemarks
-- Edit Placemarks
-- Visibility Toggle: Set placemarks as Private or Public
-- Interactive Dashboard Map: View all visible placemarks on a map with category filtering
+- Edit Placemarks and View Details
+- **Comments & Ratings**: Rate placemarks (1-5 stars) and leave text comments
+- **Visibility Toggle**: Set placemarks as Private or Public
+- **Interactive Dashboard Map**: View all visible placemarks on a map with category filtering
 - Placemark Detail Map: View location of individual placemarks
 - Public Placemarks: View public placemarks from all users alongside your own
+- **Admin Dashboard**: View list of users and delete users (Admin privileges required)
 
 **Quick links**
 - Entry: [src/server.ts](src/server.ts#L1-L120)
@@ -62,6 +66,14 @@ Copy or create a `.env` file with at least the cookie settings:
 ```
 COOKIE_NAME=your_cookie_name
 COOKIE_PASSWORD=long_secure_password_here
+```
+
+To create an admin account on startup, add the following variables:
+
+```
+ADMIN_USERNAME=admin
+ADMIN_EMAIL=admin@admin.com
+ADMIN_PASSWORD=secret
 ```
 
 The app can also use a MongoDB-backed store. When using `mongo` as the storage option (for example by calling `db.init("mongo")`), set the MongoDB connection string in the `DB` environment variable (or `db` for legacy compatibility). Example:

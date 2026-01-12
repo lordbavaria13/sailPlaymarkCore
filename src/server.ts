@@ -69,6 +69,7 @@ const init = async () => {
     Handlebars.registerHelper("json", (context) => 
          (JSON.stringify(context))
     );
+    Handlebars.registerHelper("eq", (a, b) => a === b);
 
     server.views({
     engines: {

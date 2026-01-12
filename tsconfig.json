@@ -15,7 +15,7 @@
     "types": [
       "node",
       "mocha",
-      "chai" // falls du Chai nutzt
+      "chai"
     ]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/test/**/*.ts"],

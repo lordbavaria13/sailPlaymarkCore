@@ -4,7 +4,7 @@ import { v4 } from "uuid";
 import { db } from "../models/db.js";
 import { DetailsProps } from "../models/json/detail-json-store.js";
 import { PlacemarkProps } from "../models/json/placemark-json-store.js";
-import { DetailsSpec, PlacemarkSpec } from "../models/joi-schemas.js";
+import { DetailsSpec, PlacemarkSpec, CommentSpec } from "../models/joi-schemas.js";
 
 async function getDashboardData(request: Request) {
     const loggedInUser = request.auth.credentials as { _id?: string };
@@ -102,10 +102,55 @@ export const dashboardController = {
             const placemark = (await db.placemarkStore!.getPlacemarkById(placemarkId)) as PlacemarkProps;   
             console.log("Placemark ID:", placemarkId);
             const details = await db.detailStore!.getDetailByPmId(placemarkId);
+            const comments = await db.commentStore?.getCommentsByPlacemarkId(placemarkId) ?? [];
             const owner = await db.userStore!.getUserById(placemark.userId);
             console.log("Details:", details);
-            return h.view("placemark-detail-view", { details: details, placemark: placemark, owner: owner, user: loggedInUser } );
+            return h.view("placemark-detail-view", { details: details, placemark: placemark, owner: owner, user: loggedInUser, comments: comments } );
         }
+    },
+
+    addComment: {
+        validate: {
+            payload: CommentSpec,
+            options: { abortEarly: false },
+            failAction: async function (request: Request, h: ResponseToolkit, error?: Error) {
+                // Re-render the view with errors (needs data again)
+                const loggedInUser = request.auth.credentials as { _id?: string };
+                const placemarkId = request.params.id;
+                const placemark = (await db.placemarkStore!.getPlacemarkById(placemarkId)) as PlacemarkProps;
+                const details = await db.detailStore!.getDetailByPmId(placemarkId);
+                const comments = await db.commentStore?.getCommentsByPlacemarkId(placemarkId) ?? [];
+                const owner = await db.userStore!.getUserById(placemark.userId);
+                
+                return h.view("placemark-detail-view", {
+                    title: "Error adding comment",
+                    errors: error?.message,
+                    details: details,
+                    placemark: placemark,
+                    owner: owner,
+                    user: loggedInUser,
+                    comments: comments
+                }).takeover().code(400);
+            },
+        },
+        handler: async function (request: Request, h: ResponseToolkit) {
+            const loggedInUser = request.auth.credentials as { _id?: string };
+            const placemarkId = request.params.id;
+            const payload = request.payload as { text: string; rating: number };
+            
+            // Get current user details for display name (denormalization)
+            const user = await db.userStore!.getUserById(loggedInUser._id!);
+
+            await db.commentStore!.addComment({
+                placemarkId: placemarkId,
+                userId: loggedInUser._id!,
+                username: user?.username ?? "Unknown",
+                text: payload.text,
+                rating: Number(payload.rating),
+                date: new Date() // Store will overwrite/set this usually but good to be explicit or let store handle
+            });
+            return h.redirect(`/dashboard/placemark/${placemarkId}`);
+        },
     },
 
         showEditPlacemarkDetails: {

@@ -46,6 +46,16 @@
   <div>
   {{> list-details details}}
   </div>
+
+  <div class="columns is-multiline mt-4">
+    <div class="column is-6">
+      {{> add-comment}}
+    </div>
+    <div class="column is-6">
+      {{> list-comments comments=comments}}
+    </div>
+  </div>
+
 </section>
 
 <script>
