@@ -40,7 +40,6 @@ export const dashboardController = {
             if (!loggedInUser || !loggedInUser._id) {
                 throw new Error("User not authenticated");
             }
-            
             const viewData = await getDashboardData(request);
             return h.view("dashboard-view", viewData);
         },
@@ -48,12 +47,13 @@ export const dashboardController = {
 
     addPlacemark: {
         validate: {
-      payload: PlacemarkSpec,
-      options: { abortEarly: false },
-            failAction: function (request:Request, h:ResponseToolkit, error?:Error) {
-                return h.view("dashboard-view", { title: "Add Placemark error", errors: error?.message }).takeover().code(400);
+            payload: PlacemarkSpec,
+            options: { abortEarly: false },
+            failAction: async function (request:Request, h:ResponseToolkit, error?:Error) {
+                const viewData = await getDashboardData(request);
+                return h.view("dashboard-view", { ...viewData, title: "Add Placemark error", errors: error?.message }).takeover().code(400);
             },
-    },
+        },
         handler: async function (request: Request, h: ResponseToolkit) {
             const payload = request.payload as { title?: string };
             const loggedInUser = request.auth.credentials as { _id?: string };
@@ -84,12 +84,6 @@ export const dashboardController = {
     deletePlacemark: {
         handler: async function( request: Request, h: ResponseToolkit) {
             const placemarkId = request.params.id;
-            const loggedInUser = request.auth.credentials as { _id?: string };
-            const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId) as PlacemarkProps;
-            if (placemark.userId !== loggedInUser._id) {
-                const viewData = await getDashboardData(request);
-                return h.view("dashboard-view", { ...viewData, errors: [{ message: "Action only allow for the placemark owner" }] }).code(403);
-            }
             await db.placemarkStore!.deletePlacemarkById(placemarkId);
             return h.redirect("/dashboard");
         }
@@ -100,6 +94,9 @@ export const dashboardController = {
             const loggedInUser = request.auth.credentials as { _id?: string; isAdmin?: boolean };
             const placemarkId = request.params.id;
             const placemark = (await db.placemarkStore!.getPlacemarkById(placemarkId)) as PlacemarkProps;   
+            if (!placemark) {
+                return h.redirect("/dashboard");
+            }
             console.log("Placemark ID:", placemarkId);
             const details = await db.detailStore!.getDetailByPmId(placemarkId);
             const comments = await db.commentStore?.getCommentsByPlacemarkId(placemarkId) ?? [];
@@ -114,10 +111,11 @@ export const dashboardController = {
             payload: CommentSpec,
             options: { abortEarly: false },
             failAction: async function (request: Request, h: ResponseToolkit, error?: Error) {
-                // Re-render the view with errors (needs data again)
                 const loggedInUser = request.auth.credentials as { _id?: string };
                 const placemarkId = request.params.id;
                 const placemark = (await db.placemarkStore!.getPlacemarkById(placemarkId)) as PlacemarkProps;
+                if (!placemark) return h.redirect("/dashboard");
+
                 const details = await db.detailStore!.getDetailByPmId(placemarkId);
                 const comments = await db.commentStore?.getCommentsByPlacemarkId(placemarkId) ?? [];
                 const owner = await db.userStore!.getUserById(placemark.userId);
@@ -138,7 +136,6 @@ export const dashboardController = {
             const placemarkId = request.params.id;
             const payload = request.payload as { text: string; rating: number };
             
-            // Get current user details for display name (denormalization)
             const user = await db.userStore!.getUserById(loggedInUser._id!);
 
             await db.commentStore!.addComment({
@@ -147,7 +144,7 @@ export const dashboardController = {
                 username: user?.username ?? "Unknown",
                 text: payload.text,
                 rating: Number(payload.rating),
-                date: new Date() // Store will overwrite/set this usually but good to be explicit or let store handle
+                date: new Date()
             });
             return h.redirect(`/dashboard/placemark/${placemarkId}`);
         },
@@ -161,16 +158,10 @@ export const dashboardController = {
             if (!details) {
                 return h.view("edit-placemark-view", { details: null, user: loggedInUser });
             }
-            const placemark = (await db.placemarkStore!.getPlacemarkById(details.pmId)) as PlacemarkProps;
-            if (placemark.userId !== loggedInUser._id) {
-                const viewData = await getDashboardData(request);
-                return h.view("dashboard-view", { ...viewData, errors: [{ message: "Action only allow for the placemark owner" }] }).code(403);
-            }
+            const placemark = await db.placemarkStore!.getPlacemarkById(details.pmId);
             const category = placemark?.category ?? "marina";
             const images = placemark?.images ? placemark.images.join(", ") : "";
-            
-            const isPrivate = placemark?.private !== false;
-            return h.view("edit-placemark-view", { details: details, placemark: placemark, category, images, private: isPrivate, user: loggedInUser });
+            return h.view("edit-placemark-view", { details: details, placemark: placemark, category, images, user: loggedInUser });
         }
     },
     updatePlacemarkDetails: {
@@ -183,32 +174,26 @@ export const dashboardController = {
     },
         handler: async function(request: Request, h: ResponseToolkit) {
             const placemarkId = request.params.id;
-            const loggedInUser = request.auth.credentials as { _id?: string };
-            const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId) as PlacemarkProps;
-            if (placemark.userId !== loggedInUser._id) {
-                const viewData = await getDashboardData(request);
-                return h.view("dashboard-view", { ...viewData, errors: [{ message: "Action only allow for the placemark owner" }] }).code(403);
-            }
             const detailsId = await db.detailStore!.getDetailByPmId(placemarkId).then(detail => detail?._id) ?? "";
-            const payload = request.payload as DetailsProps & { category?: string; images?: string; private?: string | boolean };
-            const updatedDetails: DetailsProps | null = {
+            const payload = request.payload as DetailsProps & { category?: string; images?: string };
+            const updatedDetails: DetailsProps = {
                 pmId: placemarkId,
                 latitude: Number(payload.latitude),
                 longitude: Number(payload.longitude),
                 title: payload.title,
-                description: payload.description,
+                description: payload.description ?? "",
+                _id: detailsId || undefined,
             };
             
             const category = (payload.category ?? "").toLowerCase();
  
             const images = payload.images ? payload.images.split(",").map((s) => s.trim()).filter(Boolean) : [];
-            const privatePlacemark = payload.private === "true" || payload.private === true;
 
             console.log("Updated Details:", updatedDetails);
-            await db.detailStore!.updateDetailsById(detailsId, updatedDetails!);
+            await db.detailStore!.updateDetailsById(detailsId, updatedDetails);
             
-            await db.placemarkStore!.updatePlacemarkById(placemarkId, { title: updatedDetails!.title, category, images, private: privatePlacemark });
-            return h.redirect(`/dashboard/placemark/${  placemarkId}`);
+            await db.placemarkStore!.updatePlacemarkById(placemarkId, { title: updatedDetails.title, category, images });
+            return h.redirect(`/dashboard/placemark/${placemarkId}`);
         }
     }
 };

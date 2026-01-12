@@ -31,7 +31,20 @@
         </div>
       </div>
     </div>
-    <div id="map-dashboard" style="height: 400px; width: 100%;"></div>
+    <div class="columns">
+      <div class="column">
+        <h3 class="subtitle">Standard</h3>
+        <div id="map-dashboard" style="height: 400px; width: 100%;"></div>
+      </div>
+      <div class="column">
+        <h3 class="subtitle">Satellite</h3>
+        <div id="map-satellite" style="height: 400px; width: 100%;"></div>
+      </div>
+      <div class="column">
+        <h3 class="subtitle">Nautical (OpenSeaMap)</h3>
+        <div id="map-nautical" style="height: 400px; width: 100%;"></div>
+      </div>
+    </div>
   </div>
 
   <div>
@@ -42,36 +55,69 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Initialize map
+    // Initialize maps
     const map = L.map('map-dashboard').setView([51.505, -0.09], 2);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
     }).addTo(map);
 
+    const mapSat = L.map('map-satellite').setView([51.505, -0.09], 2);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    }).addTo(mapSat);
+
+    const mapNautical = L.map('map-nautical').setView([51.505, -0.09], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(mapNautical);
+    L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+      attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
+    }).addTo(mapNautical);
+
     // Get placemarks data
     const placemarks = {{{json placemarks}}};
-    const markers = [];
+    const markers = []; // for map
+    const markersSat = []; // for mapSat
+    const markersNautical = []; // for mapNautical
     const categoryFilter = document.getElementById('category-filter');
 
     function renderMarkers(filter) {
       // Clear existing markers
       markers.forEach(m => map.removeLayer(m));
       markers.length = 0;
+      
+      markersSat.forEach(m => mapSat.removeLayer(m));
+      markersSat.length = 0;
+      
+      markersNautical.forEach(m => mapNautical.removeLayer(m));
+      markersNautical.length = 0;
 
       placemarks.forEach(pm => {
         if (filter === 'all' || pm.category === filter) {
           if (pm.latitude && pm.longitude && (pm.latitude !== 0 || pm.longitude !== 0)) {
-            const marker = L.marker([pm.latitude, pm.longitude])
-              .bindPopup(`<b>${pm.title}</b><br>${pm.category}`);
+            const popupContent = `<b>${pm.title}</b><br>${pm.category}`;
+            
+            const marker = L.marker([pm.latitude, pm.longitude]).bindPopup(popupContent);
             marker.addTo(map);
             markers.push(marker);
+            
+            const markerSat = L.marker([pm.latitude, pm.longitude]).bindPopup(popupContent);
+            markerSat.addTo(mapSat);
+            markersSat.push(markerSat);
+            
+            const markerNautical = L.marker([pm.latitude, pm.longitude]).bindPopup(popupContent);
+            markerNautical.addTo(mapNautical);
+            markersNautical.push(markerNautical);
           }
         }
       });
       
       if (markers.length > 0) {
           const group = new L.featureGroup(markers);
-          map.fitBounds(group.getBounds());
+          const bounds = group.getBounds();
+          map.fitBounds(bounds);
+          mapSat.fitBounds(bounds);
+          mapNautical.fitBounds(bounds);
       }
     }
 
