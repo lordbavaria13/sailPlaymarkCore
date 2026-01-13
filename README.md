@@ -11,9 +11,10 @@ You can store your specific sailing placemarks like marinas, anchorages and othe
 - **Categorize placemarks** (Marina, Anchorage, Beach, Other)
 - **Add images** to placemarks via URL
 - Browse through your placemarks
-- Edit Placemarks
-- Visibility Toggle: Set placemarks as Private or Public
-- Interactive Dashboard Map: View all visible placemarks on a map with category filtering
+- Edit Placemarks and View Details
+- **Comments & Ratings**: Rate placemarks (1-5 stars) and leave text comments
+- **Visibility Toggle**: Set placemarks as Private or Public
+- **Interactive Dashboard Map**: View all visible placemarks on a map with category filtering
 - Placemark Detail Map: View location of individual placemarks
 - Public Placemarks: View public placemarks from all users alongside your own
 - **Admin Dashboard**: View list of users and delete users (Admin privileges required)

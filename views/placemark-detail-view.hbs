@@ -40,12 +40,35 @@
 
   <div class="box">
      <h2 class="title is-5">Location</h2>
-     <div id="map-detail" style="height: 300px; width: 100%;"></div>
+     <div class="columns">
+       <div class="column">
+         <h3 class="subtitle">Standard</h3>
+         <div id="map-detail" style="height: 300px; width: 100%;"></div>
+       </div>
+       <div class="column">
+         <h3 class="subtitle">Satellite</h3>
+         <div id="map-satellite" style="height: 300px; width: 100%;"></div>
+       </div>
+       <div class="column">
+         <h3 class="subtitle">Nautical</h3>
+         <div id="map-nautical" style="height: 300px; width: 100%;"></div>
+       </div>
+     </div>
   </div>
 
   <div>
   {{> list-details details}}
   </div>
+
+  <div class="columns is-multiline mt-4">
+    <div class="column is-6">
+      {{> add-comment}}
+    </div>
+    <div class="column is-6">
+      {{> list-comments comments=comments}}
+    </div>
+  </div>
+
 </section>
 
 <script>
@@ -55,14 +78,35 @@
     const title = "{{placemark.title}}";
     
     if (lat && lng && (lat !== 0 || lng !== 0)) {
+        // Standard Map
         const map = L.map('map-detail').setView([lat, lng], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
-        L.marker([lat, lng]).addTo(map)
-          .bindPopup(title);
+        L.marker([lat, lng]).addTo(map).bindPopup(title);
+
+        // Satellite Map
+        const mapSat = L.map('map-satellite').setView([lat, lng], 13);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }).addTo(mapSat);
+        L.marker([lat, lng]).addTo(mapSat).bindPopup(title);
+
+        // Nautical Map
+        const mapNautical = L.map('map-nautical').setView([lat, lng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(mapNautical);
+        L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png', {
+            attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
+        }).addTo(mapNautical);
+        L.marker([lat, lng]).addTo(mapNautical).bindPopup(title);
+
     } else {
-        document.getElementById('map-detail').innerHTML = "<p class='has-text-grey'>No valid location data available</p>";
+        const noDataHtml = "<p class='has-text-grey'>No valid location data available</p>";
+        document.getElementById('map-detail').innerHTML = noDataHtml;
+        document.getElementById('map-satellite').innerHTML = noDataHtml;
+        document.getElementById('map-nautical').innerHTML = noDataHtml;
     }
   });
 </script>

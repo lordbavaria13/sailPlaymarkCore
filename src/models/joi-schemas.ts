@@ -28,7 +28,7 @@ export const DetailsSpec = Joi.object()
     latitude: Joi.number().example("51.5").required(),
     longitude: Joi.number().example("-0.1").required(),
     description: Joi.string().allow("").example("Tall tower").required(),
-    // categories/images are optional CSV strings provided by the edit form
+    
     category: Joi.string().valid("marina", "anchorage", "beach", "other").lowercase().required().example("marina"),
     images: Joi.string().allow("").example("https://example.com/a.jpg, https://example.com/b.jpg").optional(),
     private: Joi.boolean().optional(),
@@ -45,7 +45,13 @@ export const PlacemarkSpec = Joi.object()
 
 export const PlacemarkArray = Joi.array().items(PlacemarkSpec).label("PlacemarkArray");
 
-// API payload/response shapes (used for Swagger + API route validation)
+export const CommentSpec = Joi.object()
+  .keys({
+    text: Joi.string().required().min(3).example("Great spot!"),
+    rating: Joi.number().required().min(1).max(5).example(5),
+  })
+  .label("Comment");
+
 export const DetailApiSpec = Joi.object()
   .keys({
     pmId: IdSpec.required().example("d0f3f2b8-1234-4c2c-9d9d-abcdefabcdef"),
@@ -66,6 +72,7 @@ export const PlacemarkApiSpec = Joi.object()
     userId: IdSpec.required().example("d0f3f2b8-1234-4c2c-9d9d-abcdefabcdef"),
     category: Joi.string().valid("marina", "anchorage", "beach", "other").optional().example("marina"),
     images: Joi.array().items(Joi.string()).optional().example(["https://example.com/a.jpg"]),
+    private: Joi.boolean().optional().example(true),
     _id: IdSpec,
     __v: Joi.number(),
   })

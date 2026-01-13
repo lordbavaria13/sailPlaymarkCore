@@ -9,6 +9,10 @@ export async function connectMongo(): Promise<void> {
     throw new Error("connectMongo: missing DB connection string in env var `DB` or `db`");
   }
 
+  if (Mongoose.connection.readyState === 1) {
+    return;
+  }
+
   Mongoose.set("strictQuery", true);
   await Mongoose.connect(uri);
   const db = Mongoose.connection;

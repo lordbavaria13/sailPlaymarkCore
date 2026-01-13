@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 
 import Cookie from "@hapi/cookie";
+import Bell from "@hapi/bell";
 import Joi from "joi";
 import Inert from "@hapi/inert";
 import HapiSwagger from "hapi-swagger";
@@ -43,6 +44,7 @@ const init = async () => {
     await server.register(Vision);
     await server.register(Cookie);
     await server.register(Inert);
+    await server.register(Bell);
 
       await server.register([
     Inert,
@@ -56,19 +58,37 @@ const init = async () => {
     server.validator(Joi);
 
     server.auth.strategy("session", "cookie", {
-    cookie: {
-      name: process.env.COOKIE_NAME,
-      password: process.env.COOKIE_PASSWORD,
-      isSecure: false,
-    },
-    redirectTo: "/",
-    validate: accountsController.validate,
+      cookie: {
+        name: process.env.COOKIE_NAME,
+        password: process.env.COOKIE_PASSWORD,
+        isSecure: false, // should be true in production
+      },
+      redirectTo: "/",
+      validate: accountsController.validate,
     });
+
+    server.auth.strategy("github", "bell", {
+      provider: "github",
+      password: "cookie_encryption_password_secure",
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      isSecure: false,
+    });
+
+    server.auth.strategy("google", "bell", {
+      provider: "google",
+      password: "cookie_encryption_password_secure",
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      isSecure: false, // should be true in production
+    });
+
     server.auth.default("session");
 
     Handlebars.registerHelper("json", (context) => 
          (JSON.stringify(context))
     );
+    Handlebars.registerHelper("eq", (a, b) => a === b);
 
     server.views({
     engines: {
@@ -83,7 +103,6 @@ const init = async () => {
   });
     const storeType = (process.env.STORE_TYPE ?? "mongo") as "mongo" | "json";
     await db.init(storeType);
-
 
     try {
       const adminUsername = process.env.ADMIN_USERNAME;
