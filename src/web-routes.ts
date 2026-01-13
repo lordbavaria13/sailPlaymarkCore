@@ -11,6 +11,8 @@ export const webRoutes:ServerRoute[] = [
   { method: "GET", path: "/logout", options: accountsController.logout },
   { method: "POST", path: "/register", options: accountsController.signup },
   { method: "POST", path: "/authenticate", options: accountsController.login },
+  { method: "GET", path: "/login/github", options: accountsController.loginGithub },
+  { method: "GET", path: "/login/google", options: accountsController.loginGoogle },
   { method: "GET", path: "/dashboard/deleteplacemark/{id}", options: dashboardController.deletePlacemark },
   { method: "GET", path: "/dashboard/placemark/{id}", options: dashboardController.showPlacemarkDetails },
   { method: "POST", path: "/dashboard/placemark/{id}/comment", options: dashboardController.addComment },

@@ -1,6 +1,7 @@
 
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import bcrypt from "bcryptjs";
+import { v4 } from "uuid";
 import { db } from "../models/db.js";
 import { UserProps } from "../models/json/user-json-store.js";
 import { UserCredentialsSpec, UserSpec } from "../models/joi-schemas.js";
@@ -70,12 +71,74 @@ export const accountsController = {
       if (!isValid) {
         return h.redirect("/");
       }
-      // create session
       const { cookieAuth } = request;
       cookieAuth.set({ id: user._id });
       return h.redirect("/dashboard");
     },
   },
+
+  loginGithub: {
+    auth: "github",
+    handler: async function (request: Request, h: ResponseToolkit) {
+      if (!request.auth.isAuthenticated) {
+        return h.view("login-view", { title: "Login Error", errors: "Authentication failed" });
+      }
+      if (!db.userStore) {
+        return h.redirect("/");
+      }
+
+      const credentials = request.auth.credentials as any;
+      const profile = credentials?.profile;
+      const email = profile?.email;
+      const username = profile?.username || profile?.displayName || email.split("@")[0];
+
+      let user = await db.userStore.getUserByEmail(email);
+
+      if (!user) {
+        user = {
+          username: username,
+          email: email,
+          password: v4(),
+        };
+        await db.userStore.addUser(user);
+      }
+
+      request.cookieAuth.set({ id: user._id });
+      return h.redirect("/dashboard");
+    },
+  },
+
+  loginGoogle: {
+    auth: "google",
+    handler: async function (request: Request, h: ResponseToolkit) {
+      if (!request.auth.isAuthenticated) {
+        return h.view("login-view", { title: "Login Error", errors: "Authentication failed" });
+      }
+      if (!db.userStore) {
+        return h.redirect("/");
+      }
+
+      const credentials = request.auth.credentials as any;
+      const profile = credentials?.profile;
+      const email = profile?.email;
+      const username = profile?.displayName || email.split("@")[0];
+
+      let user = await db.userStore.getUserByEmail(email);
+
+      if (!user) {
+        user = {
+          username: username,
+          email: email,
+          password: v4(),
+        };
+        await db.userStore.addUser(user);
+      }
+
+      request.cookieAuth.set({ id: user._id });
+      return h.redirect("/dashboard");
+    },
+  },
+
   logout: {
     auth: false as const,
     handler: function (request: Request, h: ResponseToolkit) {
