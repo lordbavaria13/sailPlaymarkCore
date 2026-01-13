@@ -89,8 +89,8 @@ export const accountsController = {
 
       const credentials = request.auth.credentials as any;
       const profile = credentials?.profile;
-      const email = profile?.email;
-      const username = profile?.username || profile?.displayName || email.split("@")[0];
+      const username = profile?.username || profile?.displayName || "github_user";
+      const email = profile?.email || `${username}@github.com`;
 
       let user = await db.userStore.getUserByEmail(email);
 
@@ -100,8 +100,11 @@ export const accountsController = {
           email: email,
           password: v4(),
         };
-        await db.userStore.addUser(user);
+        user = await db.userStore.addUser(user);
       }
+      
+      console.log("Logged in user via GitHub:", user.email, "ID:", user._id);
+      console.log("Setting Cookie ID:", user._id);
 
       request.cookieAuth.set({ id: user._id });
       return h.redirect("/dashboard");
@@ -149,14 +152,28 @@ export const accountsController = {
   },
 
   async validate(request: Request, session: { id?: string }) {
+    console.log("--- Validate Session ---");
+    console.log("Session object:", JSON.stringify(session));
     
     if (!session || !session.id) {
+      console.log("Validation Failed: No session ID");
       return { isValid: false };
     }
-    const user = await db.userStore!.getUserById(session.id);
+    
+    // Ensure DB is initialized
+    if (!db.userStore) {
+        console.log("Validation Failed: UserStore not initialized");
+        return { isValid: false };
+    }
+
+    const user = await db.userStore.getUserById(session.id);
+    
     if (!user) {
+      console.log(`Validation Failed: User not found for ID ${session.id}`);
       return { isValid: false };
     }
+
+    console.log(`Validation Success: User ${user.email} (${user._id})`);
     return { isValid: true, credentials: user };
   },
 

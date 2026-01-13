@@ -62,6 +62,9 @@ const init = async () => {
         name: process.env.COOKIE_NAME,
         password: process.env.COOKIE_PASSWORD,
         isSecure: false,
+        isSameSite: "Lax",
+        path: "/",            // enforce root path
+        ttl: 24 * 60 * 60 * 1000, 
       },
       redirectTo: "/",
       validate: accountsController.validate,
@@ -70,8 +73,10 @@ const init = async () => {
     const bellAuthOptions = {
         password: "cookie_encryption_password_secure",
         isSecure: process.env.NODE_ENV === "production",  
-        location: process.env.RENDER_EXTERNAL_URL || "http://localhost:3000"
+        location: process.env.RENDER_EXTERNAL_URL || server.info.uri
     };
+    
+    console.log("Bell Strategy Location:", bellAuthOptions.location);
 
     server.auth.strategy("github", "bell", {
         provider: "github",
