@@ -61,7 +61,7 @@ const init = async () => {
       cookie: {
         name: process.env.COOKIE_NAME,
         password: process.env.COOKIE_PASSWORD,
-        isSecure: process.env.NODE_ENV === "production",
+        isSecure: false,
       },
       redirectTo: "/",
       validate: accountsController.validate,
