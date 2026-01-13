@@ -72,7 +72,7 @@ const init = async () => {
       password: "cookie_encryption_password_secure",
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      isSecure: process.env.NODE_ENV === "production",
+      isSecure: false,
     });
 
     server.auth.strategy("google", "bell", {
@@ -80,7 +80,7 @@ const init = async () => {
       password: "cookie_encryption_password_secure",
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      isSecure: process.env.NODE_ENV === "production"
+      isSecure: false,
     });
 
     server.auth.default("session");
