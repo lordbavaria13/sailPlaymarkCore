@@ -67,20 +67,24 @@ const init = async () => {
       validate: accountsController.validate,
     });
 
+    const bellAuthOptions = {
+        password: "cookie_encryption_password_secure",
+        isSecure: process.env.NODE_ENV === "production",  
+        location: process.env.RENDER_EXTERNAL_URL || "http://localhost:3000"
+    };
+
     server.auth.strategy("github", "bell", {
-      provider: "github",
-      password: "cookie_encryption_password_secure",
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      isSecure: false,
+        provider: "github",
+        clientId: process.env.GITHUB_CLIENT_ID,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET,
+        ...bellAuthOptions,
     });
 
     server.auth.strategy("google", "bell", {
-      provider: "google",
-      password: "cookie_encryption_password_secure",
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      isSecure: false,
+        provider: "google",
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        ...bellAuthOptions,
     });
 
     server.auth.default("session");
