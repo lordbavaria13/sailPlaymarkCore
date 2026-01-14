@@ -18,6 +18,9 @@ export const webRoutes:ServerRoute[] = [
   { method: "POST", path: "/dashboard/placemark/{id}/comment", options: dashboardController.addComment },
   { method: "GET", path: "/dashboard/edit/{id}", options: dashboardController.showEditPlacemarkDetails },
   { method: "POST", path: "/dashboard/updateplacemark/{id}", options: dashboardController.updatePlacemarkDetails },
+  { method: "POST", path: "/dashboard/placemark/{id}/uploadimage", options: dashboardController.uploadImage },
+  { method: "POST", path: "/dashboard/placemark/{id}/deleteimage", options: dashboardController.deleteImage },
+
 
   { method: "GET", path: "/dashboard", options: dashboardController.index },
   { method: "POST", path: "/dashboard/addplacemark", options: dashboardController.addPlacemark },

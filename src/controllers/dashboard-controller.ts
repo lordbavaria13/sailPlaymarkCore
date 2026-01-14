@@ -6,6 +6,8 @@ import { DetailsProps } from "../models/json/detail-json-store.js";
 import { PlacemarkProps } from "../models/json/placemark-json-store.js";
 import { DetailsSpec, PlacemarkSpec, CommentSpec } from "../models/joi-schemas.js";
 
+import { imageStore } from "../models/image-store.js";
+
 async function getDashboardData(request: Request) {
     const loggedInUser = request.auth.credentials as { _id?: string };
     const userPlacemarks = await db.placemarkStore!.getUserPlacemarks(loggedInUser._id!) as PlacemarkProps[];
@@ -187,7 +189,7 @@ export const dashboardController = {
             
             const category = (payload.category ?? "").toLowerCase();
  
-            const images = payload.images ? payload.images.split(",").map((s) => s.trim()).filter(Boolean) : [];
+            const images = payload.images ?? [];
             const isPrivate = payload.private;
 
             console.log("Updated Details:", updatedDetails);
@@ -196,10 +198,69 @@ export const dashboardController = {
             await db.placemarkStore!.updatePlacemarkById(placemarkId, { 
                 title: updatedDetails.title, 
                 category, 
-                images,
+                images: [...images],
                 private: isPrivate
             });
             return h.redirect(`/dashboard/placemark/${placemarkId}`);
         }
+    },
+
+    uploadImage: {
+    handler: async function (request: Request, h: ResponseToolkit) {
+      try {
+        const placemark = await db.placemarkStore!.getPlacemarkById(request.params.id);
+        const payload = request.payload as { imagefile: any };
+        const file = payload.imagefile;
+        if (Object.keys(file).length > 0) {
+          const url = await imageStore.uploadImage(file.path);
+          if (url) {
+            if (!placemark!.images) {
+              placemark!.images = [];
+            }
+            placemark!.images.push(url);
+            await db.placemarkStore!.updatePlacemarkById(placemark!._id!, { images: placemark!.images });
+          }
+        }
+        return h.redirect(`/dashboard/placemark/${placemark!._id}`);
+      } catch (err) {
+        console.log(err);
+        return h.redirect(`/dashboard/placemark/${request.params.id}`);
+      }
+    },
+    payload: {
+      multipart: true,
+      output: "file" as const,
+      maxBytes: 209715200,
+      parse: true,
+      allow: "multipart/form-data",
+    },
+  },
+
+  deleteImage: {
+    handler: async function (request: Request, h: ResponseToolkit) {
+        const placemarkId = request.params.id;
+        const payload = request.payload as { url: string };
+
+        try {
+            const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId);
+            if (!placemark) return h.redirect(`/dashboard/placemark/${placemarkId}`);
+
+            const imageUrl = payload.url;
+            const publicIdMatch = imageUrl.match(/\/v\d+\/(.+)\.\w+$/);
+
+            if (publicIdMatch && publicIdMatch[1]) {
+                const publicId = publicIdMatch[1];
+                await imageStore.deleteImage(publicId);
+            }
+
+            const updatedImages = placemark.images?.filter((img: string) => img !== imageUrl) || [];
+            await db.placemarkStore!.updatePlacemarkById(placemarkId, { images: updatedImages });
+
+             return h.redirect(`/dashboard/placemark/${placemarkId}`);
+        } catch (err) {
+            console.log(err);
+             return h.redirect(`/dashboard/placemark/${placemarkId}`);
+        }
     }
+  },
 };

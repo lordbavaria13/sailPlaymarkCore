@@ -31,6 +31,7 @@ export const DetailsSpec = Joi.object()
     
     category: Joi.string().valid("marina", "anchorage", "beach", "other").lowercase().required().example("marina"),
     images: Joi.string().allow("").example("https://example.com/a.jpg, https://example.com/b.jpg").optional(),
+    imagefile: Joi.any().meta({ swaggerType: "file" }).optional().description("An image file"),
     private: Joi.boolean().optional(),
   })
   .label("Detail");

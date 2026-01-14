@@ -38,7 +38,6 @@ export const adminController = {
       const targetUserId = request.params.id as string;
       const creds = request.auth.credentials as Credentials;
 
-      // Prevent deleting yourself (basic safety).
       if (creds?._id && targetUserId === creds._id) {
         return h.redirect("/admin");
       }

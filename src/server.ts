@@ -61,7 +61,7 @@ const init = async () => {
       cookie: {
         name: process.env.COOKIE_NAME,
         password: process.env.COOKIE_PASSWORD,
-        isSecure: false, // should be true in production
+        isSecure: false,
       },
       redirectTo: "/",
       validate: accountsController.validate,
@@ -80,7 +80,7 @@ const init = async () => {
       password: "cookie_encryption_password_secure",
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      isSecure: false, // should be true in production
+      isSecure: false, 
     });
 
     server.auth.default("session");

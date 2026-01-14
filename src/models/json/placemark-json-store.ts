@@ -23,7 +23,6 @@ export const placemarkJsonStore = {
 
   async addPlacemarks(placemark: PlacemarkProps): Promise<PlacemarkProps> {
     await db.read();
-    // ensure defaults for new optional fields
     if (!placemark.category) placemark.category = "marina";
     if (!placemark.images) placemark.images = [];
     if (typeof placemark.private === "undefined") placemark.private = true;
@@ -55,15 +54,14 @@ export const placemarkJsonStore = {
     await db.read();
     const placemarkIndex = (db.data!.placemarks as PlacemarkProps[]).findIndex((placemark) => placemark._id === id);
     if (placemarkIndex === -1) {
-      return null; // Placemark not found
+      return null;
     }
     const placemark = (db.data!.placemarks as PlacemarkProps[])[placemarkIndex];
-    // preserve existing arrays if not provided in update
     const merged: PlacemarkProps = {
       ...placemark,
       ...updatedPlacemark,
       category: updatedPlacemark.category ?? placemark.category ?? "marina",
-      images: updatedPlacemark.images ?? placemark.images ?? [],
+      images: [...(updatedPlacemark.images ?? placemark.images ?? [])],
     };
     (db.data!.placemarks as PlacemarkProps[])[placemarkIndex] = merged;
     await db.write();

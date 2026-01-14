@@ -1,10 +1,7 @@
-import { EventEmitter } from "events";
 import { assert } from "chai";
 import { placemarkService } from "./placemark-service.js";
 import { assertSubset } from "../test-utils.js";
 import { maggie, mozart, testPlacemark, testPlacemarks } from "../fixtures.js";
-
-EventEmitter.setMaxListeners(25);
 
 suite("Placemark API tests", () => {
   let user: { _id?: string } | null = null;
