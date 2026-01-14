@@ -50,7 +50,7 @@ export const detailJsonStore = {
     await db.read();
     const detailsIndex = db.data.details.findIndex((d) => d._id === id);
     if (detailsIndex === -1) {
-      return null; // Details not found
+      return null;
     }
     const details = db.data.details[detailsIndex];
     const merged: DetailsProps = {

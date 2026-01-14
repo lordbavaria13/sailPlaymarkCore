@@ -9,7 +9,7 @@ You can store your specific sailing placemarks like marinas, anchorages and othe
 - Signup & Login (with secure password hashing and salting)
 - Create Placemarks with Name, Description and Location
 - **Categorize placemarks** (Marina, Anchorage, Beach, Other)
-- **Add images** to placemarks via URL
+- **Add multiple images** to placemarks via Cloudinary upload
 - Browse through your placemarks
 - Edit Placemarks and View Details
 - **Comments & Ratings**: Rate placemarks (1-5 stars) and leave text comments
@@ -29,6 +29,7 @@ You can store your specific sailing placemarks like marinas, anchorages and othe
 
 Live-Demo on: https://sailplacemarkcore.onrender.com/
 Open-API(Swagger) on: https://sailplacemarkcore.onrender.com/documentation
+MongoDB Cloud Deployment on: https://cloud.mongodb.com/v2/
 
 Prerequisites: Node.js (16+ recommended) and npm.
 
@@ -66,6 +67,15 @@ Copy or create a `.env` file with at least the cookie settings:
 ```
 COOKIE_NAME=your_cookie_name
 COOKIE_PASSWORD=long_secure_password_here
+```
+
+### Cloudinary Configuration (Image Upload)
+To enable image uploads, you need a Cloudinary account. Add your credentials to the `.env` file:
+
+```
+CLOUD_NAME=your_cloud_name
+CLOUD_API_KEY=your_api_key
+CLOUD_API_SECRET=your_api_secret
 ```
 
 To create an admin account on startup, add the following variables:

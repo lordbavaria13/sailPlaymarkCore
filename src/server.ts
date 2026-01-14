@@ -63,7 +63,7 @@ const init = async () => {
         password: process.env.COOKIE_PASSWORD,
         isSecure: false,
         isSameSite: "Lax",
-        path: "/",            // enforce root path
+        path: "/",           
         ttl: 24 * 60 * 60 * 1000, 
       },
       redirectTo: "/",

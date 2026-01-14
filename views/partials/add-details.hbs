@@ -1,10 +1,11 @@
-<form class="box" action="/dashboard/updateplacemark/{{pmId}}" method="POST">
+<div class="box">
+  <form id="placemark-form" action="/dashboard/updateplacemark/{{pmId}}" method="POST"></form>
   <h1 class="title is-4">{{title}} Details</h1>
   
   <div class="field">
     <label class="label">Title</label>
     <div class="control">
-      <input class="input" type="text" placeholder="Enter Title" name="title" value="{{title}}">
+      <input class="input" type="text" form="placemark-form" placeholder="Enter Title" name="title" value="{{title}}">
     </div>
   </div>
 
@@ -13,7 +14,7 @@
       <div class="field">
         <label class="label">Latitude</label>
         <div class="control">
-          <input class="input" type="text" placeholder="Enter latitude" name="latitude" value="{{latitude}}">
+          <input class="input" type="text" form="placemark-form" placeholder="Enter latitude" name="latitude" value="{{latitude}}">
         </div>
       </div>
     </div>
@@ -21,7 +22,7 @@
       <div class="field">
         <label class="label">Longitude</label>
         <div class="control">
-          <input class="input" type="text" placeholder="Enter longitude" name="longitude" value="{{longitude}}">
+          <input class="input" type="text" form="placemark-form" placeholder="Enter longitude" name="longitude" value="{{longitude}}">
         </div>
       </div>
     </div>
@@ -33,7 +34,7 @@
         <label class="label">Category</label>
         <div class="control">
           <div class="select is-fullwidth">
-            <select name="category">
+            <select name="category" form="placemark-form">
               {{#if category}}
                 <option value="{{category}}" selected>{{category}}</option>
               {{/if}}
@@ -49,10 +50,7 @@
     <div class="column">
       <div class="field">
         <label class="label">Images</label>
-        <div class="control">
-          <input class="input" type="text" placeholder="https://... , https://..." name="images" value="{{images}}">
-        </div>
-        <p class="help">Comma-separated URLs</p>
+        {{> placemark-image placemark=placemark }}
       </div>
     </div>
   </div>
@@ -61,11 +59,11 @@
     <label class="label">Visibility</label>
     <div class="control">
       <label class="radio">
-        <input type="radio" name="private" value="false" {{#unless private}}checked{{/unless}}>
+        <input type="radio" name="private" form="placemark-form" value="false" {{#unless private}}checked{{/unless}}>
         Public
       </label>
       <label class="radio">
-        <input type="radio" name="private" value="true" {{#if private}}checked{{/if}}>
+        <input type="radio" name="private" form="placemark-form" value="true" {{#if private}}checked{{/if}}>
         Private
       </label>
     </div>
@@ -74,13 +72,13 @@
   <div class="field">
     <label class="label">Description</label>
     <div class="control">
-      <textarea class="textarea" placeholder="Enter description" name="description" rows="6">{{description}}</textarea>
+      <textarea class="textarea" placeholder="Enter description" form="placemark-form" name="description" rows="6">{{description}}</textarea>
     </div>
   </div>
 
   <div class="field">
     <div class="control">
-      <button class="button is-primary is-fullwidth">Add Details</button>
+      <button class="button is-primary is-fullwidth" form="placemark-form">Add Details</button>
     </div>
   </div>
-</form>
+</div>

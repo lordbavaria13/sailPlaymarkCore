@@ -26,8 +26,7 @@ export const detailMongoStore = {
 
   async addDetails(details: DetailsProps): Promise<DetailsProps | null> {
     const { v4 } = await import("uuid");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    if (!(details as any)._id) (details as any)._id = v4();
+    if (!details._id) details._id = v4();
     const newDetails = new Detail(details);
     const detailsObj = await newDetails.save();
     return this.getDetailsById(detailsObj._id!);

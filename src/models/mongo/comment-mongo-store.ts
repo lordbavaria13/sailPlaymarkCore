@@ -12,12 +12,12 @@ export const commentMongoStore = {
     if (!comment._id) comment._id = v4();
     const newComment = new Comment(comment);
     const commentObj = await newComment.save();
-    return commentObj as unknown as CommentProps;
+    return commentObj as CommentProps;
   },
 
   async getCommentsByPlacemarkId(placemarkId: string): Promise<CommentProps[]> {
     const comments = await Comment.find({ placemarkId }).lean();
-    return comments as unknown as CommentProps[];
+    return comments as CommentProps[];
   },
 
   async deleteComment(id: string): Promise<void> {
