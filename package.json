@@ -14,7 +14,8 @@
     "lint:fix": "npm run lint:fix --silent",
     "test": "mocha --ui tdd --import=tsx \"src/test/**/*.ts\" --exit",
     "testmodels": "mocha --ui tdd --import=tsx \"src/test/models/*.ts\" --exit",
-    "testapi": "mocha --ui tdd --import=tsx \"src/test/api/*.ts\" --exit"
+    "testapi": "mocha --ui tdd --import=tsx \"src/test/api/*.ts\" --exit",
+    "test:e2e": "npx playwright test"
   },
   "keywords": [],
   "author": "",

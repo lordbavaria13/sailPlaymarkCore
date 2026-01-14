@@ -69,7 +69,7 @@ test.describe("Placemark Functional Tests", () => {
     await page.fill("input[name=\"latitude\"]", "53.00");
     await page.fill("input[name=\"longitude\"]", "40.00");
     await page.fill("textarea[name=\"description\"]", "Updated Description");
-    await page.check("input[name=\"private\"][value=\"false\"]"); // Set to Public
+    await page.check("input[name=\"private\"][value=\"false\"]");
     await page.click("button:has-text(\"Add Details\")");
 
     await expect(page.url()).toContain("/dashboard/placemark/");
@@ -90,5 +90,28 @@ test.describe("Placemark Functional Tests", () => {
     await placemarkBox.locator("a[href*=\"/dashboard/deleteplacemark/\"]").click();
     
     await expect(page.locator(".box .title").filter({ hasText: placemarkTitle })).not.toBeVisible();
+  });
+
+  test("should allow a user to add a comment and rating", async ({ page }) => {
+    const user = generateUser();
+    await signupAndLogin(page, user);
+    
+    const placemarkTitle = `Comment Me ${Date.now()}`;
+    await createPlacemark(page, placemarkTitle);
+
+    // Go to details
+    const placemarkBox = page.locator(".box", { hasText: placemarkTitle });
+    await placemarkBox.locator("a[href*=\"/dashboard/placemark/\"]").click();
+
+    // Add comment
+    const commentText = "This is a fantastic spot!";
+    await page.selectOption("select[name=\"rating\"]", "5");
+    await page.fill("textarea[name=\"text\"]", commentText);
+    await page.click("button:has-text(\"Submit Review\")");
+
+    // Check if comment appears
+    await expect(page.locator("body")).toContainText(commentText);
+    await expect(page.locator("body")).toContainText("⭐⭐⭐⭐⭐");
+    await expect(page.locator("body")).toContainText(user.username);
   });
 });

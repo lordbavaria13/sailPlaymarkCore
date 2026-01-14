@@ -175,7 +175,7 @@ export const dashboardController = {
         handler: async function(request: Request, h: ResponseToolkit) {
             const placemarkId = request.params.id;
             const detailsId = await db.detailStore!.getDetailByPmId(placemarkId).then(detail => detail?._id) ?? "";
-            const payload = request.payload as DetailsProps & { category?: string; images?: string };
+            const payload = request.payload as DetailsProps & { category?: string; images?: string; private?: boolean };
             const updatedDetails: DetailsProps = {
                 pmId: placemarkId,
                 latitude: Number(payload.latitude),
@@ -188,11 +188,17 @@ export const dashboardController = {
             const category = (payload.category ?? "").toLowerCase();
  
             const images = payload.images ? payload.images.split(",").map((s) => s.trim()).filter(Boolean) : [];
+            const isPrivate = payload.private;
 
             console.log("Updated Details:", updatedDetails);
             await db.detailStore!.updateDetailsById(detailsId, updatedDetails);
             
-            await db.placemarkStore!.updatePlacemarkById(placemarkId, { title: updatedDetails.title, category, images });
+            await db.placemarkStore!.updatePlacemarkById(placemarkId, { 
+                title: updatedDetails.title, 
+                category, 
+                images,
+                private: isPrivate
+            });
             return h.redirect(`/dashboard/placemark/${placemarkId}`);
         }
     }

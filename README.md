@@ -29,6 +29,7 @@ You can store your specific sailing placemarks like marinas, anchorages and othe
 
 Live-Demo on: https://sailplacemarkcore.onrender.com/
 Open-API(Swagger) on: https://sailplacemarkcore.onrender.com/documentation
+MongoDB Cloud Deployment on: https://cloud.mongodb.com/v2/
 
 Prerequisites: Node.js (16+ recommended) and npm.
 
