@@ -3,48 +3,31 @@ import Joi from "joi";
 
 export const IdSpec = Joi.alternatives().try(Joi.string(), Joi.object()).description("a valid ID");
 
-export const UserSpec = Joi.object()
-  .keys({
-    username: Joi.string().example("HomerSimpson").required(),
-    email: Joi.string().email().example("homer@simpson.com").required(),
-    password: Joi.string().example("secret").required(),
-    _id: IdSpec,
-    __v: Joi.number(),
-  })
-  .label("UserDetails");
-
-export const UserArray = Joi.array().items(UserSpec).label("UserArray");
-
 export const UserCredentialsSpec = Joi.object()
   .keys({
-    username: Joi.string().example("HomerSimpson").required(),
+    username: Joi.string().example("HomerSimpson"),
     password: Joi.string().example("secret").required(),
   })
+  .or("username", "email")
   .label("UserCredentials");
 
-export const DetailsSpec = Joi.object()
+  export const UserSpec = UserCredentialsSpec.keys({
+  email: Joi.string().email().example("homer@simpson.com").required(),
+}).label("UserDetails");
+
+export const UserSpecPlus = UserSpec.keys({
+  _id: IdSpec,
+  __v: Joi.number(),
+}).label("UserDetailsPlus")
+
+export const UserArray = Joi.array().items(UserSpecPlus).label("UserArray");
+
+export const AuthResponseSpec = Joi.object()
   .keys({
-    title: Joi.string().example("Tower").required(),
-    latitude: Joi.number().example("51.5").required(),
-    longitude: Joi.number().example("-0.1").required(),
-    description: Joi.string().allow("").example("Tall tower").required(),
-    
-    category: Joi.string().valid("marina", "anchorage", "beach", "other").lowercase().required().example("marina"),
-    images: Joi.string().allow("").example("https://example.com/a.jpg, https://example.com/b.jpg").optional(),
-    imagefile: Joi.any().meta({ swaggerType: "file" }).optional().description("An image file"),
-    private: Joi.boolean().optional(),
+    success: Joi.boolean().required().example(true),
+    token: Joi.string().required().example("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
   })
-  .label("Detail");
-
-export const DetailsArray = Joi.array().items(DetailsSpec).label("DetailsArray");
-
-export const PlacemarkSpec = Joi.object()
-  .keys({
-    title: Joi.string().example("My Placemark").required(),
-  })
-  .label("Placemark");
-
-export const PlacemarkArray = Joi.array().items(PlacemarkSpec).label("PlacemarkArray");
+  .label("AuthResponse");
 
 export const CommentSpec = Joi.object()
   .keys({
@@ -53,30 +36,37 @@ export const CommentSpec = Joi.object()
   })
   .label("Comment");
 
-export const DetailApiSpec = Joi.object()
+export const DetailSpec = Joi.object()
   .keys({
-    pmId: IdSpec.required().example("d0f3f2b8-1234-4c2c-9d9d-abcdefabcdef"),
-    latitude: Joi.number().required().example(51.5),
-    longitude: Joi.number().required().example(-0.1),
     title: Joi.string().required().example("Tower"),
+    latitude: Joi.number().optional().example(51.5),
+    longitude: Joi.number().optional().example(-0.1),
     description: Joi.string().allow("").required().example("Tall tower"),
-    _id: IdSpec,
-    __v: Joi.number(),
+    category: Joi.string().valid("marina", "anchorage", "beach", "other").lowercase().optional().example("marina"),
+    private: Joi.boolean().optional().example(true),
   })
-  .label("DetailApi");
+  .label("Detail");
 
-export const DetailApiArray = Joi.array().items(DetailApiSpec).label("DetailApiArray");
+    export const DetailSpecPlus = DetailSpec.keys({
+  _id: IdSpec,
+  __v: Joi.number(),
+}).label("DetailPlus");
 
-export const PlacemarkApiSpec = Joi.object()
+export const DetailsArray = Joi.array().items(DetailSpecPlus).label("DetailsArray");
+
+export const PlacemarkSpec = Joi.object()
   .keys({
     title: Joi.string().required().example("My Placemark"),
-    userId: IdSpec.required().example("d0f3f2b8-1234-4c2c-9d9d-abcdefabcdef"),
-    category: Joi.string().valid("marina", "anchorage", "beach", "other").optional().example("marina"),
+    userId: IdSpec.optional().example("d0f3f2b8-1234-4c2c-9d9d-abcdefabcdef"),
     images: Joi.array().items(Joi.string()).optional().example(["https://example.com/a.jpg"]),
     private: Joi.boolean().optional().example(true),
-    _id: IdSpec,
-    __v: Joi.number(),
+     category: Joi.string().valid("marina", "anchorage", "beach", "other").lowercase().optional().example("marina"),
   })
-  .label("PlacemarkApi");
+  .label("Placemark");
 
-export const PlacemarkApiArray = Joi.array().items(PlacemarkApiSpec).label("PlacemarkApiArray");
+  export const PlacemarkSpecPlus = PlacemarkSpec.keys({
+  _id: IdSpec,
+  __v: Joi.number(),
+}).label("PlacemarkPlus");
+
+export const PlacemarkArray = Joi.array().items(PlacemarkSpecPlus).label("PlacemarkArray");

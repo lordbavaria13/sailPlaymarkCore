@@ -1,7 +1,7 @@
 import Boom from "@hapi/boom";
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { db } from "../models/db.js";
-import { PlacemarkApiArray, PlacemarkApiSpec } from "../models/joi-schemas.js";
+import { IdSpec, PlacemarkArray, PlacemarkSpec, PlacemarkSpecPlus } from "../models/joi-schemas.js";
 import { validationError } from "../models/logger.js";
 
 interface PlacemarkProps {
@@ -14,7 +14,9 @@ interface PlacemarkProps {
 
 export const placemarkApi = {
   find: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (_request: Request, _h: ResponseToolkit) {
       try {
         const placemarks = await db.placemarkStore!.getAllPlacemarks();
@@ -26,11 +28,13 @@ export const placemarkApi = {
     tags: ["api"],
     description: "Get all placemarks",
     notes: "Returns all placemarks",
-    response: { schema: PlacemarkApiArray, failAction: validationError },
+    response: { schema: PlacemarkArray, failAction: validationError },
   },
 
   findOne: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     async handler(request: Request, _h: ResponseToolkit) {
       try {
         const placemark = await db.placemarkStore!.getPlacemarkById(request.params.id);
@@ -45,11 +49,14 @@ export const placemarkApi = {
     tags: ["api"],
     description: "Get a specific placemark",
     notes: "Returns placemark details",
-    response: { schema: PlacemarkApiSpec, failAction: validationError },
+     validate: { params: { id: IdSpec }, failAction: validationError },
+    response: { schema: PlacemarkSpec, failAction: validationError },
   },
 
   create: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request: Request, h: ResponseToolkit) {
       try {
         const placemark = request.payload;
@@ -65,12 +72,14 @@ export const placemarkApi = {
     tags: ["api"],
     description: "Create a placemark",
     notes: "Returns the newly created placemark",
-    validate: { payload: PlacemarkApiSpec, failAction: validationError },
-    response: { schema: PlacemarkApiSpec, failAction: validationError },
+    validate: { payload: PlacemarkSpec, failAction: validationError },
+    response: { schema: PlacemarkSpecPlus, failAction: validationError },
   },
 
   deleteOne: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request: Request, h: ResponseToolkit) {
       try {
         const placemark = await db.placemarkStore!.getPlacemarkById(request.params.id);
@@ -86,10 +95,13 @@ export const placemarkApi = {
     tags: ["api"],
     description: "Delete a placemark",
     notes: "Deletes the placemark with the given id",
+    validate: { params: { id: IdSpec }, failAction: validationError },
   },
 
   deleteAll: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (_request: Request, h: ResponseToolkit) {
       try {
         await db.placemarkStore!.deleteAllPlacemarks();

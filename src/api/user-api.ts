@@ -2,8 +2,9 @@ import Boom from "@hapi/boom";
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { db } from "../models/db.js";
 import { UserProps } from "../models/mongo/user-mongo-store.js";
-import { UserArray, UserSpec } from "../models/joi-schemas.js";
+import { AuthResponseSpec, IdSpec, UserArray, UserCredentialsSpec, UserSpec, UserSpecPlus } from "../models/joi-schemas.js";
 import { validationError } from "../models/logger.js";
+import { createToken } from "../models/jwt-utils.js";
 
 export const userApi = {
   create: {
@@ -23,11 +24,13 @@ export const userApi = {
     description: "Create a User",
     notes: "Returns the newly created user",
     validate: { payload: UserSpec, failAction: validationError },
-    response: { schema: UserSpec, failAction: validationError },
+    response: { schema: UserSpecPlus, failAction: validationError },
   },
 
     findOne: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request: Request, _h: ResponseToolkit) {
       try {
         const user = await db.userStore!.getUserById(request.params.id);
@@ -42,7 +45,8 @@ export const userApi = {
     tags: ["api"],
     description: "Get a specific user",
     notes: "Returns user details",
-    response: { schema: UserSpec, failAction: validationError },
+    validate: { params: { id: IdSpec }, failAction: validationError },
+    response: { schema: UserSpecPlus, failAction: validationError },
   },
 
   find: {
@@ -62,7 +66,9 @@ export const userApi = {
   },
 
     deleteAll: {
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request: Request, h: ResponseToolkit) {
       try {
         await db.userStore!.deleteAllUsers();
@@ -74,5 +80,32 @@ export const userApi = {
     tags: ["api"],
     description: "Delete all userApi",
     notes: "All userApi removed from Playtime",
+  },
+
+    authenticate: {
+    auth: false,
+    handler: async function (request: Request, h: ResponseToolkit) {
+      try {
+        const payload = request.payload as UserProps;
+          const user = payload.email
+            ? await db.userStore!.getUserByEmail(payload.email)
+            : await db.userStore!.getUserByUsername(payload.username);
+        if (!user) {
+          return Boom.unauthorized("User not found");
+        }
+        if (user.password !== payload.password) {
+          return Boom.unauthorized("Invalid password");
+        }
+        const token = createToken(user as { _id: string; email: string });
+        return h.response({ success: true, token: token }).code(201);
+      } catch (err) {
+        return Boom.serverUnavailable("Database Error");
+      }
+    },
+      tags: ["api"],
+      description: "Authenticate user",
+      notes: "Returns a JWT token",
+      validate: { payload: UserCredentialsSpec, failAction: validationError },
+      response: { schema: AuthResponseSpec, failAction: validationError },
   },
 };

@@ -9,9 +9,12 @@ import Bell from "@hapi/bell";
 import Joi from "joi";
 import Inert from "@hapi/inert";
 import HapiSwagger from "hapi-swagger";
+import * as jwt from "hapi-auth-jwt2";
+import { validate } from "./models/jwt-utils.js";
 import { webRoutes } from "./web-routes.js";
 import { db } from "./models/db.js";
 import { apiRoutes } from "./api-routes.js";
+
 
 
 import { accountsController } from "./controllers/accounts-controller.js";
@@ -45,6 +48,7 @@ const init = async () => {
     await server.register(Cookie);
     await server.register(Inert);
     await server.register(Bell);
+    await server.register(jwt);
 
       await server.register([
     Inert,
@@ -79,10 +83,12 @@ const init = async () => {
     console.log("Bell Strategy Location:", bellAuthOptions.location);
 
     server.auth.strategy("github", "bell", {
-        provider: "github",
-        clientId: process.env.GITHUB_CLIENT_ID,
-        clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        ...bellAuthOptions,
+      provider: "github",
+      password: "cookie_encryption_password_secure",
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      isSecure: false,
+      scope: ["user:email"],
     });
 
     server.auth.strategy("google", "bell", {
@@ -91,6 +97,13 @@ const init = async () => {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         ...bellAuthOptions,
     });
+
+      server.auth.strategy("jwt", "jwt", {
+    key: process.env.COOKIE_PASSWORD,
+    validate: validate,
+    verifyOptions: { algorithms: ["HS256"] }
+  });
+
 
     server.auth.default("session");
 

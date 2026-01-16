@@ -4,7 +4,7 @@ import { v4 } from "uuid";
 import { db } from "../models/db.js";
 import { DetailsProps } from "../models/json/detail-json-store.js";
 import { PlacemarkProps } from "../models/json/placemark-json-store.js";
-import { DetailsSpec, PlacemarkSpec, CommentSpec } from "../models/joi-schemas.js";
+import { DetailSpec, PlacemarkSpec, CommentSpec } from "../models/joi-schemas.js";
 
 import { imageStore } from "../models/image-store.js";
 
@@ -52,8 +52,9 @@ export const dashboardController = {
             payload: PlacemarkSpec,
             options: { abortEarly: false },
             failAction: async function (request:Request, h:ResponseToolkit, error?:Error) {
+                console.log("Add Placemark Validation Error:", error);
                 const viewData = await getDashboardData(request);
-                return h.view("dashboard-view", { ...viewData, title: "Add Placemark error", errors: error?.message }).takeover().code(400);
+                return h.view("dashboard-view", { ...viewData, title: "Add Placemark error", errors: error }).takeover().code(400);
             },
         },
         handler: async function (request: Request, h: ResponseToolkit) {
@@ -67,6 +68,7 @@ export const dashboardController = {
                 userId: loggedInUser._id!,
                 category: "marina",
                 images: [],
+                private: true,
             });
             if (!newPlacemark) {
                 return h.view("dashboard-view", { title: "Add Placemark error", errors: "Failed to create placemark." }).takeover().code(400);
@@ -96,6 +98,7 @@ export const dashboardController = {
             const loggedInUser = request.auth.credentials as { _id?: string; isAdmin?: boolean };
             const placemarkId = request.params.id;
             const placemark = (await db.placemarkStore!.getPlacemarkById(placemarkId)) as PlacemarkProps;   
+            console.log("Fetched Placemark:", placemark);
             if (!placemark) {
                 return h.redirect("/dashboard");
             }
@@ -168,10 +171,11 @@ export const dashboardController = {
     },
     updatePlacemarkDetails: {
     validate: {
-      payload: DetailsSpec,
+      payload: DetailSpec,
       options: { abortEarly: false },
             failAction: function (request:Request, h:ResponseToolkit, error?:Error) {
-                return h.view("dashboard-view", { title: "Update Placemark Error", errors: error?.message }).takeover().code(400);
+                console.log("Update Placemark Validation Error:", error);
+                return h.view("dashboard-view", { title: "Update Placemark Error", errors: [{message: error?.message}] }).takeover().code(400);
             },
     },
         handler: async function(request: Request, h: ResponseToolkit) {
@@ -188,17 +192,17 @@ export const dashboardController = {
             };
             
             const category = (payload.category ?? "").toLowerCase();
- 
-            const images = payload.images ?? [];
-            const isPrivate = payload.private;
+            const isPrivate = String(payload.private) === "true";
 
             console.log("Updated Details:", updatedDetails);
             await db.detailStore!.updateDetailsById(detailsId, updatedDetails);
             
+            const placemark = await db.placemarkStore!.getPlacemarkById(placemarkId);
+
             await db.placemarkStore!.updatePlacemarkById(placemarkId, { 
                 title: updatedDetails.title, 
                 category, 
-                images: [...images],
+                images: placemark?.images,
                 private: isPrivate
             });
             return h.redirect(`/dashboard/placemark/${placemarkId}`);
