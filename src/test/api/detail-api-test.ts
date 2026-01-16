@@ -7,19 +7,22 @@ suite("Detail API tests", () => {
 	let user: { _id?: string } | null = null;
 	let placemark: { _id?: string } | null = null;
 
-	setup(async () => {
-		await placemarkService.deleteAllDetails();
-		await placemarkService.deleteAllPlacemarks();
-		await placemarkService.deleteAllUsers();
-
-		user = await placemarkService.createUser(maggie);
-		placemark = await placemarkService.createPlacemark({ ...testPlacemark, userId: user._id! });
-
+  setup(async () => {
+    placemarkService.clearAuth();
+    user = await placemarkService.createUser(maggie);
+    await placemarkService.authenticate(maggie);
+    await placemarkService.deleteAllDetails();
+    await placemarkService.deleteAllPlacemarks();
+    await placemarkService.deleteAllUsers();
+    user = await placemarkService.createUser(maggie);
+    await placemarkService.authenticate(maggie);
+    if (!user._id) assert.fail("User not created");
+		placemark = await placemarkService.createPlacemark({ ...testPlacemark, userId: user._id });
 		concerto.pmId = placemark._id!;
-		for (let i = 0; i < testDetails.length; i += 1) {
-			testDetails[i].pmId = placemark._id!;
-		}
-	});
+		testDetails.forEach((detail) => {
+			detail.pmId = placemark!._id!;
+		});
+  });
 
 	teardown(async () => {});
 

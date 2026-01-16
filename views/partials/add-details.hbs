@@ -59,11 +59,11 @@
     <label class="label">Visibility</label>
     <div class="control">
       <label class="radio">
-        <input type="radio" name="private" form="placemark-form" value="false" {{#unless private}}checked{{/unless}}>
+        <input type="radio" name="private" form="placemark-form" value="false" {{#unless placemark.private}}checked{{/unless}}>
         Public
       </label>
       <label class="radio">
-        <input type="radio" name="private" form="placemark-form" value="true" {{#if private}}checked{{/if}}>
+        <input type="radio" name="private" form="placemark-form" value="true" {{#if placemark.private}}checked{{/if}}>
         Private
       </label>
     </div>

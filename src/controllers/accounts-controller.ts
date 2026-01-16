@@ -90,14 +90,21 @@ export const accountsController = {
       const credentials = request.auth.credentials as any;
       const profile = credentials?.profile;
       const email = profile?.email;
-      const username = profile?.username || profile?.displayName || email.split("@")[0];
+      const username = profile?.username || profile?.displayName || (email ? email.split("@")[0] : "GithubUser");
 
-      let user = await db.userStore.getUserByEmail(email);
+      let user = null;
+      if (email) {
+        user = await db.userStore.getUserByEmail(email);
+      }
+
+      if (!user) {
+        user = await db.userStore.getUserByUsername(username);
+      }
 
       if (!user) {
         user = {
           username: username,
-          email: email,
+          email: email || `${username}@github.com`,
           password: v4(),
         };
         await db.userStore.addUser(user);
@@ -145,6 +152,45 @@ export const accountsController = {
       const { cookieAuth } = request;
       cookieAuth.clear();
       return h.redirect("/");
+    },
+  },
+
+  deleteAccount: {
+    handler: async function (request: Request, h: ResponseToolkit) {
+      const loggedInUser = request.auth.credentials as { _id?: string };
+      if (!loggedInUser || !loggedInUser._id) {
+          return h.redirect("/");
+      }
+      
+      const userId = loggedInUser._id;
+      
+      try {
+        await db.userStore!.deleteUserById(userId);
+
+        const placemarks = await db.placemarkStore!.getUserPlacemarks(userId);
+        if (placemarks) {
+             await Promise.all(
+                placemarks.map(async (placemark) => {
+                    const detail = await db.detailStore!.getDetailByPmId(placemark._id!);
+                    if (detail?._id) {
+                        await db.detailStore!.deleteDetailsById(detail._id);
+                    }
+                    const comments = await db.commentStore?.getCommentsByPlacemarkId(placemark._id!) ?? [];
+                    await Promise.all(comments.map(async (comment) => {
+                        await db.commentStore!.deleteComment(comment._id!);
+                    }));
+
+                    await db.placemarkStore!.deletePlacemarkById(placemark._id!);
+                })
+            );
+        }
+        
+        request.cookieAuth.clear();
+        return h.redirect("/");
+      } catch (error) {
+          console.error("Error deleting account:", error);
+          return h.redirect("/dashboard");
+      }
     },
   },
 

@@ -1,7 +1,7 @@
 import Boom from "@hapi/boom";
 import { Request, ResponseToolkit } from "@hapi/hapi";
 import { db } from "../models/db.js";
-import { DetailApiArray, DetailApiSpec } from "../models/joi-schemas.js";
+import { DetailSpec, DetailSpecPlus, DetailsArray, IdSpec } from "../models/joi-schemas.js";
 import { validationError } from "../models/logger.js";
 
 interface DetailsProps {
@@ -15,7 +15,9 @@ interface DetailsProps {
 
 export const detailApi = {
 	find: {
-		auth: false,
+		auth: {
+      strategy: "jwt",
+    },
 		handler: async function (_request: Request, _h: ResponseToolkit) {
 			try {
 				const details = await db.detailStore!.getAllDetails();
@@ -27,11 +29,13 @@ export const detailApi = {
 		tags: ["api"],
 		description: "Get all details",
 		notes: "Returns all details",
-		response: { schema: DetailApiArray, failAction: validationError },
+		response: { schema: DetailsArray, failAction: validationError },
 	},
 
 	findOne: {
-		auth: false,
+		auth: {
+      strategy: "jwt",
+    },
 		async handler(request: Request, _h: ResponseToolkit) {
 			try {
 				const details = await db.detailStore!.getDetailsById(request.params.id);
@@ -46,11 +50,14 @@ export const detailApi = {
 		tags: ["api"],
 		description: "Get a specific detail",
 		notes: "Returns detail by id",
-		response: { schema: DetailApiSpec, failAction: validationError },
+		validate: { params: { id: IdSpec }, failAction: validationError },
+		response: { schema: DetailSpecPlus, failAction: validationError },
 	},
 
 	create: {
-		auth: false,
+		auth: {
+      strategy: "jwt",
+    },
 		handler: async function (request: Request, h: ResponseToolkit) {
 			try {
 				const details = request.payload;
@@ -66,12 +73,14 @@ export const detailApi = {
 		tags: ["api"],
 		description: "Create a detail",
 		notes: "Returns the newly created detail",
-		validate: { payload: DetailApiSpec, failAction: validationError },
-		response: { schema: DetailApiSpec, failAction: validationError },
+		validate: { payload: DetailSpec, failAction: validationError },
+		response: { schema: DetailSpecPlus, failAction: validationError },
 	},
 
 	deleteAll: {
-		auth: false,
+		auth: {
+      strategy: "jwt",
+    },
 		handler: async function (_request: Request, h: ResponseToolkit) {
 			try {
 				await db.detailStore!.deleteAllDetails();
@@ -86,7 +95,9 @@ export const detailApi = {
 	},
 
 	deleteOne: {
-		auth: false,
+		auth: {
+      strategy: "jwt",
+    },
 		handler: async function (request: Request, h: ResponseToolkit) {
 			try {
 				const details = await db.detailStore!.getDetailsById(request.params.id);
@@ -102,5 +113,6 @@ export const detailApi = {
 		tags: ["api"],
 		description: "Delete a detail",
 		notes: "Deletes the detail with the given id",
+		validate: { params: { id: IdSpec }, failAction: validationError },
 	},
 };
