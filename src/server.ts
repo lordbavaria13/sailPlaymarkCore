@@ -15,11 +15,7 @@ import { webRoutes } from "./web-routes.js";
 import { db } from "./models/db.js";
 import { apiRoutes } from "./api-routes.js";
 
-
-
 import { accountsController } from "./controllers/accounts-controller.js";
-
-
 
 const swaggerOptions = {
   info: {
@@ -27,7 +23,6 @@ const swaggerOptions = {
     version: "0.1",
   },
 };
-
 
 const dirname = process.cwd();
 
@@ -84,11 +79,9 @@ const init = async () => {
 
     server.auth.strategy("github", "bell", {
       provider: "github",
-      password: "cookie_encryption_password_secure",
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      isSecure: false,
-      scope: ["user:email"],
+      ...bellAuthOptions,
     });
 
     server.auth.strategy("google", "bell", {
@@ -103,7 +96,6 @@ const init = async () => {
     validate: validate,
     verifyOptions: { algorithms: ["HS256"] }
   });
-
 
     server.auth.default("session");
 
